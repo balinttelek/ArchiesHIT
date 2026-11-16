@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Archie's HIT</title>
+<title>The Archie Way</title>
 <meta name="theme-color" content="#0f1115">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Archie's HIT">
+<meta name="apple-mobile-web-app-title" content="The Archie Way">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -52,6 +52,19 @@ h2{font-size:20px;margin:0 0 4px}
 .beats i{width:16px;height:16px;border-radius:50%;background:var(--card2);transition:background .05s}
 .beats i.on{background:var(--accent)}.beats i.acc.on{background:var(--warn)}
 .back{background:transparent;color:var(--accent);padding:0;min-height:32px;font-size:16px}
+.task{border-top:1px solid var(--line);padding:4px 0}
+.task:first-child{border-top:0}
+.trow{display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;-webkit-user-select:none;user-select:none}
+.tick{width:28px;min-width:28px;height:28px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:transparent}
+.done .tick{background:var(--good);border-color:var(--good);color:#04130c}
+.done>.trow .ttl,.sub.done .ttl{text-decoration:line-through;color:var(--muted)}
+.ttl{font-weight:600;overflow-wrap:anywhere}
+.subs{padding-left:38px}
+.sub .trow{padding:6px 0}.sub .tick{width:22px;min-width:22px;height:22px;font-size:13px}
+.carry{font-size:11px;font-weight:700;color:var(--warn)}
+.ibtn{background:transparent;color:var(--muted);min-height:34px;min-width:34px;padding:0 6px;font-size:18px}
+.daynav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.daynav button{min-width:44px}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -89,10 +102,10 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .foodform button{grid-column:1/-1}
 .inline{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:40}
-nav .in{display:flex;gap:4px;max-width:560px;width:100%}
-nav button{flex:1;min-width:0;background:transparent;color:var(--muted);font-size:10.5px;padding:4px 0;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav .in{display:flex;gap:0;max-width:560px;width:100%}
+nav button{flex:1;min-width:0;background:transparent;color:var(--muted);font-size:9.5px;letter-spacing:-.1px;padding:4px 0;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button.on{color:var(--accent)}
-nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--muted);margin-left:4px;vertical-align:2px;white-space:nowrap}
 .tag.post{color:var(--warn)}.tag.added{color:var(--accent)}.tag.pre{color:var(--good)}
 .ex{padding:14px 0;border-top:1px solid var(--line)}
@@ -122,8 +135,9 @@ code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:13px;wo
 <nav id="nav" hidden><div class="in">
 <button data-a="tab" data-v="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ma</button>
 <button data-a="tab" data-v="workout"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Edzés</button>
+<button data-a="tab" data-v="work"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>Munka</button>
 <button data-a="tab" data-v="acts"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>Tevékenység</button>
-<button data-a="tab" data-v="results"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>Eredmények</button>
+<button data-a="tab" data-v="results"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>Rekordok</button>
 <button data-a="tab" data-v="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profil</button>
 </div></nav>
 <script>
@@ -193,7 +207,7 @@ const exById=id=>ALL_EX.find(e=>e.id===id);
 
 /* ---------- state ---------- */
 function fresh(){return {profile:null,days:{},workouts:[],rest:{hours:MIN_REST,log:[]},volume:[0,0,0,0,0],nextDay:0,pressFirst:false,session:null,blocked:[],comp:{},compHandled:{},
- acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
+ tasks:[],acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){const f=fresh();const o=Object.assign(f,s);o.results=Object.assign(fresh().results,s.results||{});while(o.volume.length<4)o.volume.push(0);return o;}}catch(e){}return fresh();}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -426,7 +440,7 @@ function seg(name,opts,val,extra=''){return `<div class="seg ${extra}" data-seg=
 
 function profileForm(first){
  const P=S.profile||{},T=S.profile?targets():null,sg=P.stepGoal||10000;
- return `${first?`<h1>Archie's HIT</h1><div class="sub">Add meg az adataidat. Ebből számolom az alapanyagcserét (Mifflin-St Jeor) és a napi célokat.</div>`:''}
+ return `${first?`<h1>The Archie Way</h1><div class="sub">Add meg az adataidat. Ebből számolom az alapanyagcserét (Mifflin-St Jeor) és a napi célokat.</div>`:''}
  <div class="card">${first?'':'<div class="label">Profil</div>'}
  <div class="grid2" style="margin-top:0">
   <label class="field"><span>Életkor (év)</span><input id="f_age" inputmode="numeric" value="${P.age??''}"></label>
@@ -730,12 +744,45 @@ function setBpm(v){S.metro.bpm=Math.max(30,Math.min(260,Math.round(v)));save();c
 setInterval(()=>{if(!S.timer)return;document.querySelectorAll('[data-live=run]').forEach(e=>e.textContent=hms(runMs()));
  if(tab==='acts'&&actOpen){const t=$('[data-live=today]'),T=$('[data-live=total]');if(t)t.textContent=hmText(actMs(actOpen,null,dkey()));if(T)T.textContent=hmText(actMs(actOpen));}},1000);
 
+/* ---------- munka: napi feladatok, alfeladatokkal; a lezáratlanok átnyúlnak a következő napra ---------- */
+let workDay=null,taskOpen=null;
+function taskVisible(t,k){return t.date<=k&&(!t.done||t.doneDay>=k);}
+function taskDoneOn(t,k){return t.done&&t.doneDay<=k;}
+function daysBetween(a,b){return Math.round((kdate(b)-kdate(a))/864e5);}
+function setTaskDone(t,v,k){t.done=v;t.doneDay=v?k:null;if(v)t.subs.forEach(x=>x.done=true);}
+function viewWork(){
+ const today=dkey(),k=workDay||today,isToday=k===today,past=k<today;
+ const list=S.tasks.filter(t=>taskVisible(t,k)).sort((a,b)=>(taskDoneOn(a,k)-taskDoneOn(b,k))||(a.date<b.date?-1:a.date>b.date?1:0));
+ const open=list.filter(t=>!taskDoneOn(t,k)).length,done=list.length-open;
+ const label=isToday?'Ma':k===addDays(today,1)?'Holnap':k===addDays(today,-1)?'Tegnap':'';
+ return `<h1>Munka</h1><div class="sub">Napi feladatok. A le nem zártak átkerülnek a következő napra.</div>
+ <div class="daynav"><button class="sm" data-a="workDay" data-v="-1" aria-label="Előző nap">‹</button>
+  <div style="text-align:center"><b>${label||dateLong(k)}</b>${label?`<div class="muted small">${dateLong(k)}</div>`:''}</div>
+  <button class="sm" data-a="workDay" data-v="1" aria-label="Következő nap">›</button></div>
+ ${!isToday?`<button class="sm ghost block" style="margin-bottom:12px" data-a="workDay" data-v="0">Vissza a mai naphoz</button>`:''}
+ <div class="card">${list.length?`<div class="row between"><div class="label" style="margin:0">${open} nyitott · ${done} kész</div></div>`:''}
+  ${list.length?`<div style="margin-top:4px">${list.map(t=>taskHtml(t,k)).join('')}</div>`:`<div class="hint">${past?'Ezen a napon nem volt feladat.':'Nincs feladat erre a napra.'}</div>`}
+  ${past?'':`<form class="inline" data-form="newTask"><input id="taskIn" placeholder="Új feladat" autocomplete="off" enterkeyhint="done"><button class="sm primary" type="submit">Hozzáadás</button></form>`}</div>
+ <div class="hint">Koppints egy feladatra a késszé tételhez, újabb koppintással visszanyitod. Az összes alfeladat kipipálása lezárja a fő feladatot is.</div>`;
+}
+function taskHtml(t,k){
+ const d=taskDoneOn(t,k),carried=!d&&t.date<k?daysBetween(t.date,k):0,subsDone=t.subs.filter(x=>x.done).length,openSubs=taskOpen===t.id;
+ return `<div class="task ${d?'done':''}"><div class="trow" data-a="taskToggle" data-v="${t.id}"><span class="tick">✓</span>
+  <div class="grow"><div class="ttl">${esc(t.title)}</div>
+   ${carried||t.subs.length?`<div class="small muted">${carried?`<span class="carry">áthozva ${carried} napja</span>${t.subs.length?' · ':''}`:''}${t.subs.length?`${subsDone}/${t.subs.length} alfeladat`:''}</div>`:''}</div>
+  <button class="ibtn" data-a="taskSubs" data-v="${t.id}" aria-label="Alfeladatok">${openSubs?'−':'+'}</button>
+  <button class="ibtn" data-a="taskEdit" data-v="${t.id}" aria-label="Szerkesztés">⋯</button></div>
+ ${t.subs.length||openSubs?`<div class="subs">${t.subs.map(x=>`<div class="sub ${x.done?'done':''}"><div class="trow" data-a="subToggle" data-v="${t.id}|${x.id}"><span class="tick">✓</span><div class="grow ttl">${esc(x.title)}</div>
+   ${openSubs?`<button class="ibtn" data-a="subDel" data-v="${t.id}|${x.id}" aria-label="Törlés">×</button>`:''}</div></div>`).join('')}
+  ${openSubs?`<form class="inline" data-form="newSubTask" data-v="${t.id}" style="margin:4px 0 8px"><input id="subTaskIn" placeholder="Új alfeladat" autocomplete="off"><button class="sm" type="submit">Hozzáadás</button></form>`:''}</div>`:''}</div>`;
+}
+
 function render(){
  const app=$('#app'),nav=$('#nav');
  if(!S.profile){app.innerHTML=profileForm(true);nav.hidden=true;return;}
  nav.hidden=false;
  nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===tab));
- app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
+ app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='work'?viewWork():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
  maybeAskRecovery();
 }
 
@@ -767,6 +814,15 @@ document.addEventListener('click',e=>{
  const a=b.dataset.a,v=b.dataset.v,d=day();
  switch(a){
   case 'tab':tab=v;if(v!=='acts'&&M.on)metroStop();render();window.scrollTo(0,0);break;
+  case 'workDay':workDay=+v===0?null:addDays(workDay||dkey(),+v);if(workDay===dkey())workDay=null;taskOpen=null;render();break;
+  case 'taskToggle':{const t=S.tasks.find(x=>x.id===v),k=workDay||dkey();if(!t)return;setTaskDone(t,!taskDoneOn(t,k),k);save();render();break;}
+  case 'subToggle':{const [tid,sid]=v.split('|'),t=S.tasks.find(x=>x.id===tid),x=t&&t.subs.find(y=>y.id===sid),k=workDay||dkey();if(!x)return;
+   x.done=!x.done;if(t.subs.every(y=>y.done)){if(!t.done){t.done=true;t.doneDay=k;toast('Minden alfeladat kész, a feladat lezárva.');}}else if(t.done){t.done=false;t.doneDay=null;}
+   save();render();break;}
+  case 'taskSubs':taskOpen=taskOpen===v?null:v;render();{const i=$('#subTaskIn');if(i)i.focus();}break;
+  case 'subDel':{const [tid,sid]=v.split('|'),t=S.tasks.find(x=>x.id===tid);t.subs=t.subs.filter(y=>y.id!==sid);save();render();break;}
+  case 'taskEdit':{const t=S.tasks.find(x=>x.id===v);const n=prompt('Feladat neve (üresen hagyva törlöd)',t.title);if(n===null)return;
+   if(!n.trim()){if(confirm('Törlöd a feladatot az alfeladataival együtt?')){S.tasks=S.tasks.filter(x=>x.id!==v);save();render();}return;}t.title=n.trim();save();render();break;}
   case 'openAct':actOpen=v;render();window.scrollTo(0,0);break;
   case 'closeAct':actOpen=null;if(M.on)metroStop();render();break;
   case 'timerStart':startTimer(actOpen,v);render();break;
@@ -859,6 +915,11 @@ document.addEventListener('submit',e=>{
   if(!(kcal>=0)){toast('Add meg a kalóriát.');return;}
   day().food.push({id:uid(),name,kcal:Math.round(kcal),protein:p>0?Math.round(p*10)/10:0});save();render();
   const n=$('#fn');if(n)n.focus();
+ }else if(f==='newTask'){
+  const n=$('#taskIn').value.trim();if(!n)return;S.tasks.push({id:uid(),title:n,date:workDay||dkey(),done:false,doneDay:null,subs:[]});save();render();const i=$('#taskIn');if(i)i.focus();
+ }else if(f==='newSubTask'){
+  const n=$('#subTaskIn').value.trim();if(!n)return;const t=S.tasks.find(x=>x.id===e.target.dataset.v);t.subs.push({id:uid(),title:n,done:false});
+  if(t.done){t.done=false;t.doneDay=null;}save();render();const i=$('#subTaskIn');if(i)i.focus();
  }else if(f==='newAct'){
   const n=$('#actName').value.trim(),g=Math.round(num($('#actGoal').value)||0);if(!n){toast('Adj nevet a tevékenységnek.');return;}
   const a={id:uid(),name:n,goal:Math.max(0,g),subs:[],metro:$('#f_newMetro').value!=='0'};S.acts.push(a);actOpen=a.id;save();render();
