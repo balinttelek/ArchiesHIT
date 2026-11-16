@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Archie Way</title>
+<title>Golden Mean</title>
 <meta name="theme-color" content="#0f1115">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="The Archie Way">
+<meta name="apple-mobile-web-app-title" content="Golden Mean">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -65,6 +65,11 @@ h2{font-size:20px;margin:0 0 4px}
 .ibtn{background:transparent;color:var(--muted);min-height:34px;min-width:34px;padding:0 6px;font-size:18px}
 .daynav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .daynav button{min-width:44px}
+.trophy{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.trophy:first-child{border-top:0}
+.cup{width:40px;min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cup svg{width:22px;height:22px;fill:none;stroke:#1a1200;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cup.gold{background:linear-gradient(145deg,#ffe27a,#d4a017)}.cup.silver{background:linear-gradient(145deg,#f1f3f5,#9aa3ad)}.cup.bronze{background:linear-gradient(145deg,#f0b27a,#a0522d)}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -440,7 +445,7 @@ function seg(name,opts,val,extra=''){return `<div class="seg ${extra}" data-seg=
 
 function profileForm(first){
  const P=S.profile||{},T=S.profile?targets():null,sg=P.stepGoal||10000;
- return `${first?`<h1>The Archie Way</h1><div class="sub">Add meg az adataidat. Ebből számolom az alapanyagcserét (Mifflin-St Jeor) és a napi célokat.</div>`:''}
+ return `${first?`<h1>Golden Mean</h1><div class="sub">Add meg az adataidat. Ebből számolom az alapanyagcserét (Mifflin-St Jeor) és a napi célokat.</div>`:''}
  <div class="card">${first?'':'<div class="label">Profil</div>'}
  <div class="grid2" style="margin-top:0">
   <label class="field"><span>Életkor (év)</span><input id="f_age" inputmode="numeric" value="${P.age??''}"></label>
@@ -705,7 +710,19 @@ function viewActs(){
  ${a.metro!==false?metroCard():''}
  <div class="card"><div class="row between"><div class="label" style="margin:0">Legutóbbi alkalmak</div><button class="sm ghost" data-a="manualLog">Kézi rögzítés</button></div>
   ${recent.length?`<ul class="list small" style="margin-top:6px">${recent.map(l=>{const sb=subById(a,l.sub);return `<li><div class="grow">${esc(sb?sb.name:'?')}<div class="muted">${when(l.start)}</div></div><div>${hmText(l.end-l.start)}</div><button class="x" data-a="delLog" data-v="${l.id}" aria-label="Törlés">×</button></li>`;}).join('')}</ul>`:'<div class="hint">Még nincs rögzített alkalom.</div>'}</div>
+ ${trophyCard(a)}
  ${a.metro===false?'<button class="ghost block" data-a="metroAdd">Metronóm hozzáadása</button>':''}`;
+}
+
+const TIERS={gold:'Arany',silver:'Ezüst',bronze:'Bronz'},TIER_ORDER={gold:0,silver:1,bronze:2};
+const CUP='<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>';
+function trophyCard(a){
+ const list=(a.trophies||[]).slice().sort((x,y)=>(TIER_ORDER[x.tier]-TIER_ORDER[y.tier])||(x.k<y.k?1:-1));
+ const cnt=t=>list.filter(x=>x.tier===t).length;
+ return `<div class="card"><div class="row between"><div class="label" style="margin:0">Trófeák</div>${list.length?`<div class="muted small">${cnt('gold')} arany · ${cnt('silver')} ezüst · ${cnt('bronze')} bronz</div>`:''}</div>
+ ${list.length?`<div style="margin-top:4px">${list.map(t=>`<div class="trophy"><span class="cup ${t.tier}">${CUP}</span><div class="grow"><div style="font-weight:650;overflow-wrap:anywhere">${esc(t.name)}</div><div class="muted small">${TIERS[t.tier]} · ${dateLong(t.k)}</div></div><button class="ibtn" data-a="trophyEdit" data-v="${t.id}" aria-label="Szerkesztés">⋯</button></div>`).join('')}</div>`:'<div class="hint">Még nincs trófeád. Rögzítsd, amit elértél, pl. 160 BPM Bonham triolák.</div>'}
+ <form data-form="newTrophy" style="display:grid;gap:8px;margin-top:12px"><input id="trophyIn" placeholder="pl. John Mayer: Neon" autocomplete="off">
+  ${seg('tier',[['gold','Arany'],['silver','Ezüst'],['bronze','Bronz']],'gold')}<button class="primary" type="submit">Trófea hozzáadása</button></form></div>`;
 }
 
 /* ---------- metronóm (Web Audio, előre ütemezett kattanások) ---------- */
@@ -823,6 +840,11 @@ document.addEventListener('click',e=>{
   case 'subDel':{const [tid,sid]=v.split('|'),t=S.tasks.find(x=>x.id===tid);t.subs=t.subs.filter(y=>y.id!==sid);save();render();break;}
   case 'taskEdit':{const t=S.tasks.find(x=>x.id===v);const n=prompt('Feladat neve (üresen hagyva törlöd)',t.title);if(n===null)return;
    if(!n.trim()){if(confirm('Törlöd a feladatot az alfeladataival együtt?')){S.tasks=S.tasks.filter(x=>x.id!==v);save();render();}return;}t.title=n.trim();save();render();break;}
+  case 'trophyEdit':{const a=actById(actOpen),t=a.trophies.find(x=>x.id===v);
+   const n=prompt('Trófea neve (üresen hagyva törlöd)',t.name);if(n===null)return;
+   if(!n.trim()){if(confirm('Törlöd ezt a trófeát?')){a.trophies=a.trophies.filter(x=>x.id!==v);save();render();}return;}
+   const tr=prompt('Minősítés: 1 = arany, 2 = ezüst, 3 = bronz',String(TIER_ORDER[t.tier]+1));if(tr===null)return;
+   t.name=n.trim();t.tier=['gold','silver','bronze'][Math.round(num(tr))-1]||t.tier;save();render();break;}
   case 'openAct':actOpen=v;render();window.scrollTo(0,0);break;
   case 'closeAct':actOpen=null;if(M.on)metroStop();render();break;
   case 'timerStart':startTimer(actOpen,v);render();break;
@@ -915,6 +937,9 @@ document.addEventListener('submit',e=>{
   if(!(kcal>=0)){toast('Add meg a kalóriát.');return;}
   day().food.push({id:uid(),name,kcal:Math.round(kcal),protein:p>0?Math.round(p*10)/10:0});save();render();
   const n=$('#fn');if(n)n.focus();
+ }else if(f==='newTrophy'){
+  const n=$('#trophyIn').value.trim();if(!n){toast('Add meg a trófea nevét.');return;}
+  const a=actById(actOpen);(a.trophies=a.trophies||[]).push({id:uid(),name:n,tier:$('#f_tier').value||'gold',k:dkey()});save();render();toast('Trófea hozzáadva.');
  }else if(f==='newTask'){
   const n=$('#taskIn').value.trim();if(!n)return;S.tasks.push({id:uid(),title:n,date:workDay||dkey(),done:false,doneDay:null,subs:[]});save();render();const i=$('#taskIn');if(i)i.focus();
  }else if(f==='newSubTask'){
