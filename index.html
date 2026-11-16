@@ -65,10 +65,18 @@ h2{font-size:20px;margin:0 0 4px}
 .ibtn{background:transparent;color:var(--muted);min-height:34px;min-width:34px;padding:0 6px;font-size:18px}
 .daynav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .daynav button{min-width:44px}
-.trophy{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.trophy{display:block;padding:10px 0;border-top:1px solid var(--line)}
 .trophy:first-child{border-top:0}
 .cup{width:40px;min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .cup svg{width:22px;height:22px;fill:none;stroke:#1a1200;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.trophy.goal .cup{background:var(--card2)!important;border:2px dashed var(--line)}.trophy.goal .cup svg{stroke:var(--muted)}
+.trophy.goal .tname{color:var(--muted)}
+.trophy.goal .cup.gold{border-color:#d4a017}.trophy.goal .cup.silver{border-color:#9aa3ad}.trophy.goal .cup.bronze{border-color:#a0522d}
+.trophy .trow2{display:flex;align-items:center;gap:12px;cursor:pointer;width:100%}
+.tbody{padding:10px 0 4px 52px;display:grid;gap:8px}
+.tbody audio,.tbody video{width:100%;border-radius:10px;background:#000}
+.media{display:grid;gap:4px}
+.rec{background:var(--bad)!important;color:#fff!important}
 .cup.gold{background:linear-gradient(145deg,#ffe27a,#d4a017)}.cup.silver{background:linear-gradient(145deg,#f1f3f5,#9aa3ad)}.cup.bronze{background:linear-gradient(145deg,#f0b27a,#a0522d)}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
@@ -716,13 +724,61 @@ function viewActs(){
 
 const TIERS={gold:'Arany',silver:'Ezüst',bronze:'Bronz'},TIER_ORDER={gold:0,silver:1,bronze:2};
 const CUP='<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>';
+let trophyOpen=null;
 function trophyCard(a){
- const list=(a.trophies||[]).slice().sort((x,y)=>(TIER_ORDER[x.tier]-TIER_ORDER[y.tier])||(x.k<y.k?1:-1));
- const cnt=t=>list.filter(x=>x.tier===t).length;
- return `<div class="card"><div class="row between"><div class="label" style="margin:0">Trófeák</div>${list.length?`<div class="muted small">${cnt('gold')} arany · ${cnt('silver')} ezüst · ${cnt('bronze')} bronz</div>`:''}</div>
- ${list.length?`<div style="margin-top:4px">${list.map(t=>`<div class="trophy"><span class="cup ${t.tier}">${CUP}</span><div class="grow"><div style="font-weight:650;overflow-wrap:anywhere">${esc(t.name)}</div><div class="muted small">${TIERS[t.tier]} · ${dateLong(t.k)}</div></div><button class="ibtn" data-a="trophyEdit" data-v="${t.id}" aria-label="Szerkesztés">⋯</button></div>`).join('')}</div>`:'<div class="hint">Még nincs trófeád. Rögzítsd, amit elértél, pl. 160 BPM Bonham triolák.</div>'}
- <form data-form="newTrophy" style="display:grid;gap:8px;margin-top:12px"><input id="trophyIn" placeholder="pl. John Mayer: Neon" autocomplete="off">
-  ${seg('tier',[['gold','Arany'],['silver','Ezüst'],['bronze','Bronz']],'gold')}<button class="primary" type="submit">Trófea hozzáadása</button></form></div>`;
+ const all=a.trophies||[],won=all.filter(t=>!t.goal),goals=all.filter(t=>t.goal);
+ const sortT=l=>l.slice().sort((x,y)=>(TIER_ORDER[x.tier]-TIER_ORDER[y.tier])||(x.k<y.k?1:-1));
+ const cnt=t=>won.filter(x=>x.tier===t).length;
+ const row=t=>{const op=trophyOpen===t.id,m=t.media||[];
+  return `<div class="trophy ${t.goal?'goal':''}"><div class="trow2" data-a="trophyOpen" data-v="${t.id}"><span class="cup ${t.tier}">${CUP}</span>
+   <div class="grow"><div class="tname" style="font-weight:650;overflow-wrap:anywhere">${esc(t.name)}</div>
+   <div class="muted small">${TIERS[t.tier]} · ${t.goal?'elérendő':dateLong(t.k)}${m.length?` · ${m.length} csatolmány`:''}</div></div>
+   <span class="muted">${op?'▾':'▸'}</span></div>
+   ${op?`<div class="tbody">
+    ${m.map(x=>`<div class="media"><${x.type==='video'?'video playsinline':'audio'} controls preload="metadata" data-media="${x.id}"></${x.type==='video'?'video':'audio'}>
+     <div class="row between small muted"><span>${esc(x.name)} · ${(x.size/1048576).toFixed(1).replace('.',',')} MB</span><button class="ibtn" data-a="mediaDel" data-v="${t.id}|${x.id}" aria-label="Törlés">×</button></div></div>`).join('')}
+    <div class="row wrap" style="gap:8px">
+     <label class="sm" style="display:inline-flex;align-items:center;background:var(--card2);border-radius:12px;padding:6px 12px;font-weight:600;font-size:14px;min-height:36px;cursor:pointer">Fájl csatolása<input type="file" accept="audio/*,video/*" data-file="${t.id}" hidden></label>
+     <button class="sm ${REC.t===t.id?'rec':''}" data-a="recToggle" data-v="${t.id}">${REC.t===t.id?'■ Felvétel leállítása':'● Hangfelvétel'}</button>
+     ${t.goal?`<button class="sm primary" data-a="trophyWin" data-v="${t.id}">Teljesítve</button>`:''}
+     <button class="sm ghost" data-a="trophyEdit" data-v="${t.id}">Szerkesztés</button></div></div>`:''}</div>`;};
+ return `<div class="card"><div class="row between"><div class="label" style="margin:0">Trófeák</div>${won.length?`<div class="muted small">${cnt('gold')} arany · ${cnt('silver')} ezüst · ${cnt('bronze')} bronz</div>`:''}</div>
+ ${won.length?`<div style="margin-top:4px">${sortT(won).map(row).join('')}</div>`:'<div class="hint">Még nincs elért trófeád.</div>'}
+ ${goals.length?`<div class="label" style="margin-top:14px">Elérendő · ${goals.length}</div><div>${sortT(goals).map(row).join('')}</div>`:''}
+ <form data-form="newTrophy" style="display:grid;gap:8px;margin-top:14px"><input id="trophyIn" placeholder="pl. John Mayer: Neon" autocomplete="off">
+  ${seg('tier',[['gold','Arany'],['silver','Ezüst'],['bronze','Bronz']],'gold')}
+  ${seg('tstate',[['goal','Elérendő'],['won','Már elértem']],'goal')}
+  <button class="primary" type="submit">Trófea hozzáadása</button></form></div>`;
+}
+
+/* ---------- csatolmányok: IndexedDB-ben (a localStorage túl kicsi a hanghoz és videóhoz) ---------- */
+const MEDIA_URLS={};let dbP=null;
+function db(){if(!dbP)dbP=new Promise((res,rej)=>{const r=indexedDB.open('goldenMeanMedia',1);r.onupgradeneeded=()=>r.result.createObjectStore('media');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return dbP;}
+async function idb(mode,fn){const d=await db();return new Promise((res,rej)=>{const tx=d.transaction('media',mode),st=tx.objectStore('media'),r=fn(st);tx.oncomplete=()=>res(r&&r.result);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error);});}
+const putBlob=(id,b)=>idb('readwrite',st=>st.put(b,id)),getBlob=id=>idb('readonly',st=>st.get(id)),delBlob=id=>idb('readwrite',st=>st.delete(id));
+async function hydrateMedia(){
+ for(const el of document.querySelectorAll('[data-media]')){const id=el.dataset.media;
+  if(!MEDIA_URLS[id]){try{const b=await getBlob(id);if(!b){el.replaceWith(Object.assign(document.createElement('div'),{className:'hint',textContent:'A fájl nem található ezen az eszközön.'}));continue;}MEDIA_URLS[id]=URL.createObjectURL(b);}catch(e){continue;}}
+  if(el.getAttribute('src')!==MEDIA_URLS[id])el.src=MEDIA_URLS[id];}
+}
+async function attachBlob(tid,blob,name){
+ const a=actById(actOpen),t=a&&a.trophies.find(x=>x.id===tid);if(!t)return;
+ const type=(blob.type||'').startsWith('video')?'video':'audio',id=uid();
+ try{await putBlob(id,blob);}catch(e){toast('Nem sikerült menteni. Lehet, hogy betelt a tárhely.');return;}
+ (t.media=t.media||[]).push({id,type,name,size:blob.size,k:dkey()});save();render();toast('Csatolva.');
+ try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+}
+const REC={t:null,rec:null,chunks:[]};
+async function recToggle(tid){
+ if(REC.rec){REC.rec.stop();return;}
+ if(!navigator.mediaDevices||!window.MediaRecorder){toast('Ez az eszköz nem támogatja a hangfelvételt.');return;}
+ let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){toast('Nincs engedély a mikrofonhoz.');return;}
+ const mime=['audio/mp4','audio/webm','audio/aac'].find(m=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
+ const rec=new MediaRecorder(stream,mime?{mimeType:mime}:{});REC.t=tid;REC.rec=rec;REC.chunks=[];
+ rec.ondataavailable=e=>{if(e.data.size)REC.chunks.push(e.data);};
+ rec.onstop=()=>{stream.getTracks().forEach(x=>x.stop());const blob=new Blob(REC.chunks,{type:rec.mimeType||mime||'audio/mp4'});const t=REC.t;REC.t=null;REC.rec=null;
+  if(blob.size)attachBlob(t,blob,'Hangfelvétel '+new Date().toLocaleString('hu-HU',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));else render();};
+ rec.start();render();
 }
 
 /* ---------- metronóm (Web Audio, előre ütemezett kattanások) ---------- */
@@ -800,6 +856,7 @@ function render(){
  nav.hidden=false;
  nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===tab));
  app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='work'?viewWork():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
+ if(tab==='acts')hydrateMedia();
  maybeAskRecovery();
 }
 
@@ -840,9 +897,14 @@ document.addEventListener('click',e=>{
   case 'subDel':{const [tid,sid]=v.split('|'),t=S.tasks.find(x=>x.id===tid);t.subs=t.subs.filter(y=>y.id!==sid);save();render();break;}
   case 'taskEdit':{const t=S.tasks.find(x=>x.id===v);const n=prompt('Feladat neve (üresen hagyva törlöd)',t.title);if(n===null)return;
    if(!n.trim()){if(confirm('Törlöd a feladatot az alfeladataival együtt?')){S.tasks=S.tasks.filter(x=>x.id!==v);save();render();}return;}t.title=n.trim();save();render();break;}
+  case 'trophyOpen':trophyOpen=trophyOpen===v?null:v;render();break;
+  case 'trophyWin':{const t=actById(actOpen).trophies.find(x=>x.id===v);t.goal=false;t.k=dkey();save();render();toast('Gratulálok, '+TIERS[t.tier].toLowerCase()+' trófea megszerezve!');break;}
+  case 'recToggle':recToggle(v);break;
+  case 'mediaDel':{const [tid,mid]=v.split('|'),t=actById(actOpen).trophies.find(x=>x.id===tid);if(!confirm('Törlöd ezt a csatolmányt?'))return;
+   t.media=t.media.filter(x=>x.id!==mid);delBlob(mid).catch(()=>{});if(MEDIA_URLS[mid]){URL.revokeObjectURL(MEDIA_URLS[mid]);delete MEDIA_URLS[mid];}save();render();break;}
   case 'trophyEdit':{const a=actById(actOpen),t=a.trophies.find(x=>x.id===v);
    const n=prompt('Trófea neve (üresen hagyva törlöd)',t.name);if(n===null)return;
-   if(!n.trim()){if(confirm('Törlöd ezt a trófeát?')){a.trophies=a.trophies.filter(x=>x.id!==v);save();render();}return;}
+   if(!n.trim()){if(confirm('Törlöd ezt a trófeát a csatolmányaival együtt?')){(t.media||[]).forEach(m=>delBlob(m.id).catch(()=>{}));a.trophies=a.trophies.filter(x=>x.id!==v);save();render();}return;}
    const tr=prompt('Minősítés: 1 = arany, 2 = ezüst, 3 = bronz',String(TIER_ORDER[t.tier]+1));if(tr===null)return;
    t.name=n.trim();t.tier=['gold','silver','bronze'][Math.round(num(tr))-1]||t.tier;save();render();break;}
   case 'openAct':actOpen=v;render();window.scrollTo(0,0);break;
@@ -939,7 +1001,7 @@ document.addEventListener('submit',e=>{
   const n=$('#fn');if(n)n.focus();
  }else if(f==='newTrophy'){
   const n=$('#trophyIn').value.trim();if(!n){toast('Add meg a trófea nevét.');return;}
-  const a=actById(actOpen);(a.trophies=a.trophies||[]).push({id:uid(),name:n,tier:$('#f_tier').value||'gold',k:dkey()});save();render();toast('Trófea hozzáadva.');
+  const a=actById(actOpen);const goal=$('#f_tstate').value!=='won';(a.trophies=a.trophies||[]).push({id:uid(),name:n,tier:$('#f_tier').value||'gold',k:dkey(),goal,media:[]});save();render();toast(goal?'Elérendő trófea hozzáadva.':'Trófea hozzáadva.');
  }else if(f==='newTask'){
   const n=$('#taskIn').value.trim();if(!n)return;S.tasks.push({id:uid(),title:n,date:workDay||dkey(),done:false,doneDay:null,subs:[]});save();render();const i=$('#taskIn');if(i)i.focus();
  }else if(f==='newSubTask'){
@@ -978,6 +1040,9 @@ document.addEventListener('input',e=>{
  save();
 });
 document.addEventListener('change',e=>{if(e.target.id==='gymIn'&&S.session)render();});
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.file)return;const f=t.files&&t.files[0];if(!f)return;
+ if(f.size>300*1048576&&!confirm('Ez a fájl '+Math.round(f.size/1048576)+' MB. A nagy videók gyorsan betöltik a telefon tárhelyét. Így is csatolod?'))return;
+ attachBlob(t.dataset.file,f,f.name);});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){S=load();render();}});
 render();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
