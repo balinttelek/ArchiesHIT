@@ -35,6 +35,10 @@ h2{font-size:20px;margin:0 0 4px}
 .muted{color:var(--muted)}
 .small{font-size:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.grid3 button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:1px solid transparent}
+.grid3 button b{font-size:24px;font-variant-numeric:tabular-nums}.grid3 button span{font-size:11.5px;color:var(--muted);font-weight:600}
+.grid3 button.on{border-color:var(--accent)}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -114,7 +118,7 @@ const KEY='archiesHit_v1';
 const MIN_REST=48,MAX_REST=168,KCAL_FLOOR=1600,MAX_STEPS=22000,GAIN_EXTRA=150,CAL_EXTRA_H=72,GRACE_DAYS=7,MAX_BMR_ADJ=500;
 const LABELS=['Kimerült','Fáradt','Rendben','Jól','Kiváló'];
 const GOALS={cut:{n:'Fogyás',p:2.2},maintain:{n:'Szinten tartás',p:1.6},gain:{n:'Tömegnövelés',p:1.8}};
-const W={kcal:.35,prot:.2,steps:.2,water:.1,workout:.15}; // a célteljesítés súlyai
+const W={kcal:.25,prot:.15,steps:.15,water:.1,workout:.15,strength:.15,creatine:.05}; // az általános fitness súlyai
 const NOTICE='<b>Figyelem!</b> A gyakorlatokat körültekintő bemelegítés után végezd egy sorozatban, abszolút bukásig. Lehetőség szerint használj intenzitásnövelő technikákat, ahol tudsz.';
 const U='6-12',L='15-20',FAST_MAX=3,FAST_WINDOW=14;
 
@@ -175,7 +179,7 @@ const exById=id=>ALL_EX.find(e=>e.id===id);
 
 /* ---------- state ---------- */
 function fresh(){return {profile:null,days:{},workouts:[],rest:{hours:MIN_REST,log:[]},volume:[0,0,0,0,0],nextDay:0,pressFirst:false,session:null,blocked:[],comp:{},compHandled:{},
- weights:[],bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
+ weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){const f=fresh();const o=Object.assign(f,s);o.results=Object.assign(fresh().results,s.results||{});while(o.volume.length<4)o.volume.push(0);return o;}}catch(e){}return fresh();}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -224,7 +228,7 @@ function targets(P=S.profile){
 function calc(k=dkey()){
  const P=S.profile,d=day(k),T=targets(P);
  const steps=d.steps||0,stepK=steps*T.kps,burn=T.base+stepK;
- const stepGoalDay=T.stepGoal+(S.comp[k]||0);
+ const stepGoalDay=T.stepGoal;
  const eaten=d.food.reduce((a,f)=>a+(f.kcal||0),0),prot=d.food.reduce((a,f)=>a+(f.protein||0),0),water=d.water.reduce((a,w)=>a+w.ml,0);
  return Object.assign({},T,{steps,stepK,burn,stepGoalDay,eaten,prot,water,G:GOALS[P.goal]});
 }
@@ -245,35 +249,60 @@ function missed(k){const start=kdate(k).getTime(),r=dueBefore(start+864e5);if(!r
 /* ---------- adherence ---------- */
 function fastCount(k){let n=0;for(let i=0;i<FAST_WINDOW;i++){const d=S.days[addDays(k,-i)];if(d&&d.fast)n++;}return n;}
 function fastValid(k){return !!(S.days[k]&&S.days[k].fast)&&fastCount(k)<=FAST_MAX;}
+/* Kalóriatartozás egy napra: (bevitt − cél) + (lépéscél − lépés) × kcal/lépés. Negatív = előny. */
+function dayDebt(k){const c=calc(k);return (c.eaten-c.kcalT)+(c.stepGoal-c.steps)*c.kps;}
+/* Lezárt napok értéke rögzül, hogy a későbbi testsúlyváltozás ne írja át a múltat. */
+function closedDebt(k){if(S.debtLog[k]==null)S.debtLog[k]=Math.round(dayDebt(k));return S.debtLog[k];}
+function debtState(){
+ const today=dkey(),from=S.debtFrom||'0000';
+ const carry=trackedDays(from,today).reduce((a,k)=>a+closedDebt(k),0);
+ const live=dayDebt(today);return {carry,live,total:carry+live};
+}
+function lossScore(k){ // Fogyás: csak bevitt és elégetett kalória
+ const dd=S.days[k]||{};if(dd.fast&&!fastValid(k))return 0; // 3 böjtnap / 14 nap fölött nem javít
+ const d=closedDebt(k);return d<=0?1:Math.max(0,1-d/1000);
+}
 function score(k,final){
  const c=calc(k),T=c.kcalT,e=c.eaten,dd=S.days[k]||{};let ks;
- if(dd.fast)ks=fastValid(k)?1:0; // max. 3 böjtnap / 14 nap javít, a fölött nem
+ if(dd.fast)ks=fastValid(k)?1:0;
  else if(S.profile.goal==='cut')ks=e<=T?1:1-(e-T)/1000;
  else{const d=e-T;ks=Math.abs(d)<=150||(!final&&d<0)?1:1-(Math.abs(d)-150)/850;}
  ks=Math.max(0,Math.min(1,ks));
- const parts={kcal:ks,prot:Math.min(1,c.prot/c.protT),steps:Math.min(1,c.steps/c.stepGoalDay),water:Math.min(1,c.water/c.waterT),workout:missed(k)?0:1};
- return {total:Object.keys(W).reduce((a,x)=>a+W[x]*parts[x],0),parts};
+ const parts={kcal:ks,prot:dd.fast?0:Math.min(1,c.prot/c.protT),steps:Math.min(1,c.steps/c.stepGoalDay),water:Math.min(1,c.water/c.waterT),workout:missed(k)?0:1,creatine:dd.creatine?1:0};
+ return {parts};
 }
 const isTracked=k=>!!(S.days[k]&&(S.days[k].food.length||S.days[k].fast));
 function trackedDays(from,to){return Object.keys(S.days).filter(k=>k>=from&&k<to&&isTracked(k)).sort();}
-function allTimeScore(){
- const ks=trackedDays('0000',dkey());if(!ks.length)return null;
- const sum={total:0,kcal:0,prot:0,steps:0,water:0,workout:0};
- ks.forEach(k=>{const s=score(k,true);sum.total+=s.total;Object.keys(s.parts).forEach(p=>sum[p]+=s.parts[p]);});
- Object.keys(sum).forEach(x=>sum[x]/=ks.length);return Object.assign(sum,{n:ks.length});
+/* Bodybuilding: minden gyakorlatot az előző, azonos eszközös alkalmához mér. Elvárás: +1 ismétlés (időzítettnél +5 mp). */
+function e1rm(w,reps){return w>0?w*(1+reps/30):reps;}
+function strengthStats(){
+ const last={},res={n:0,up:0,same:0,down:0,sum:0};
+ S.workouts.forEach(w=>Object.entries(w.entries||{}).forEach(([id,e])=>{
+  if(!e.done||!e.reps)return;const ex=exById(id);if(!ex)return;
+  const r=range(ex),timed=r.sec||r.hold,add=num(e.w)||0,reps=num(e.reps)||0,bw=ex.bw?S.profile.weight:0;
+  const val=timed?reps:e1rm(add+bw,reps),key=id+'|'+(e.eq||''),p=last[key];
+  if(p){const exp=p.timed?p.reps+5:e1rm(p.load,p.reps+1);let sc;
+   if(val>=exp-1e-6){sc=1;res.up++;}else if(val>=p.val-1e-6){sc=.5;res.same++;}else{sc=0;res.down++;}
+   res.n++;res.sum+=sc;}
+  last[key]={val,reps,load:add+bw,timed};
+ }));
+ res.v=res.n?res.sum/res.n:null;return res;
 }
-
-/* ---------- overeating compensation ---------- */
-function compPlan(excess){
- const T=targets(),today=dkey();
- const need=Math.ceil(excess/T.kps);const caps=[1,2,3].map(i=>{const k=addDays(today,i);return {k,cap:Math.max(0,MAX_STEPS-T.stepGoal-(S.comp[k]||0))};}).filter(x=>x.cap>0);
- if(!caps.length)return null;const total=caps.reduce((a,x)=>a+x.cap,0);
- let days=1;while(days<caps.length&&caps.slice(0,days).reduce((a,x)=>a+x.cap,0)<need)days++;
- const use=caps.slice(0,days),plan=[];let left=Math.min(need,total);
- use.forEach((x,i)=>{const share=Math.min(x.cap,Math.ceil(left/(use.length-i)/100)*100);plan.push({k:x.k,add:share});left-=share;});
- return {plan,covered:plan.reduce((a,p)=>a+p.add,0)*T.kps,excess};
+function allScores(){
+ const ks=trackedDays('0000',dkey());
+ const out={n:ks.length,loss:null,general:null,parts:null,strength:strengthStats()};
+ if(ks.length){
+  out.loss=ks.reduce((a,k)=>a+lossScore(k),0)/ks.length;
+  const sum={kcal:0,prot:0,steps:0,water:0,workout:0,creatine:0};
+  ks.forEach(k=>{const p=score(k,true).parts;Object.keys(sum).forEach(x=>sum[x]+=p[x]);});
+  Object.keys(sum).forEach(x=>sum[x]/=ks.length);
+  sum.strength=out.strength.v;out.parts=sum;
+  const use=Object.keys(W).filter(x=>sum[x]!=null&&(x!=='creatine'||S.profile.creatine));
+  const wsum=use.reduce((a,x)=>a+W[x],0);
+  out.general=use.reduce((a,x)=>a+W[x]*sum[x],0)/wsum;
+ }
+ return out;
 }
-function compOffer(){const k=dkey(),c=calc(k),over=c.eaten-c.kcalT;if(over<=1000)return null;const open=over-(S.compHandled[k]||0);return open<50?null:compPlan(open);}
 
 /* ---------- adaptive BMR from real weight ---------- */
 function slope(pts){const n=pts.length,mx=pts.reduce((a,p)=>a+p.x,0)/n,my=pts.reduce((a,p)=>a+p.y,0)/n;let nu=0,de=0;pts.forEach(p=>{nu+=(p.x-mx)*(p.y-my);de+=(p.x-mx)**2;});return de?nu/de:0;}
@@ -417,25 +446,41 @@ function workoutCard(withBtn=true){
  ${withBtn?'<button class="primary sm" data-a="tab" data-v="workout">Edzés</button>':''}</div></div>`;
 }
 function adherenceCard(){
- const a=allTimeScore(),t=score(dkey(),false);
- const src=a||Object.assign({total:t.total},t.parts);const cls=pctCls(src.total);
- const p=x=>Math.round(src[x]*100)+'%';
- return `<div class="card"><div class="row between"><div class="label" style="margin:0">Célteljesítés</div><div class="muted small">${a?`összesen, ${a.n} nap alapján`:'még nincs lezárt nap'}</div></div>
- <div class="big c-${cls}" style="margin-top:6px">${Math.round(src.total*100)}%</div>
- <div class="bar"><i class="${cls==='bad'?'over':cls}" style="width:${src.total*100}%"></i></div>
- <div class="grid5">
+ const a=allScores(),sel=S.scoreTab||'general';
+ const pc=v=>v==null?'–':Math.round(v*100)+'%',cl=v=>v==null?'':'c-'+pctCls(v);
+ const tabs=[['loss','Fogyás',a.loss],['bb','Bodybuilding',a.strength.v],['general','Általános',a.general]];
+ let detail='';
+ if(sel==='loss')detail=a.loss==null?'Az első lezárt naplózott nap után jelenik meg.':`Csak a bevitt és az elégetett kalória számít: ha a napi kalóriatartozásod 0 vagy kevesebb, a nap 100%. Ezer kcal tartozásnál 0%. ${a.n} nap alapján.`;
+ else if(sel==='bb'){const st=a.strength;detail=st.n?`Elvárás alkalmanként +1 ismétlés (időzítettnél +5 mp). ${st.n} összevetésből: <b class="c-good">${st.up} fejlődés</b>, <b class="c-warn">${st.same} szinten</b>, <b class="c-bad">${st.down} visszaesés</b>.`:'Egy gyakorlat második naplózott alkalma után jelenik meg.';}
+ else if(a.parts){const p=x=>a.parts[x]==null?'–':Math.round(a.parts[x]*100)+'%';
+  detail=`<div class="grid5" style="margin-top:0">
   <div class="chip"><b>${p('kcal')}</b><span>kalória</span></div><div class="chip"><b>${p('prot')}</b><span>fehérje</span></div>
-  <div class="chip"><b>${p('steps')}</b><span>lépés</span></div><div class="chip"><b>${p('water')}</b><span>víz</span></div><div class="chip"><b>${p('workout')}</b><span>edzés</span></div>
- </div>${a?'':'<div class="hint">Az első naplózott nap lezárása után az összes eddigi nap átlagát mutatja.</div>'}</div>`;
+  <div class="chip"><b>${p('steps')}</b><span>lépés</span></div><div class="chip"><b>${p('water')}</b><span>víz</span></div><div class="chip"><b>${p('workout')}</b><span>edzés</span></div></div>
+  <div class="grid5"><div class="chip"><b>${p('strength')}</b><span>erő</span></div>${S.profile.creatine?`<div class="chip"><b>${p('creatine')}</b><span>kreatin</span></div>`:''}</div>
+  <div class="hint">${a.n} nap alapján, minden szempont együtt.</div>`;}
+ else detail='Az első lezárt naplózott nap után jelenik meg.';
+ return `<div class="card"><div class="label">Célteljesítés · összesített</div>
+ <div class="grid3">${tabs.map(([k,n,v])=>`<button class="${k===sel?'on':''}" data-a="scoreTab" data-v="${k}"><b class="${cl(v)}">${pc(v)}</b><span>${n}</span></button>`).join('')}</div>
+ <div class="small" style="margin-top:12px">${detail}</div></div>`;
 }
-function compCard(){
- const o=compOffer();if(!o)return '';
- const lines=o.plan.map(x=>`${dateLong(x.k)}: <b>+${fmt(x.add)}</b> lépés`).join('<br>');
- return `<div class="card alert"><div class="label c-warn">Túlevés</div>
- <div>${fmt(o.excess)} kcal-val a cél fölött vagy. Kompenzálhatod emelt lépéscéllal (max. ${fmt(MAX_STEPS)} lépés/nap):</div>
- <div class="small" style="margin:10px 0">${lines}</div>
- ${o.covered<o.excess-50?`<div class="hint" style="margin-bottom:10px">A 3 napos keret ${fmt(o.covered)} kcal-t fed le, a többit nem lehet így behozni.</div>`:''}
- <div class="row"><button class="primary sm" data-a="compAccept">Elfogadom</button><button class="sm ghost" data-a="compDecline">Nem kérem</button></div></div>`;
+function stepsTxt(n){return fmt(Math.ceil(n/100)*100)+' lépés';}
+function debtCard(){
+ const c=calc(),st=debtState(),t=st.total,cls=t>0?'c-bad':'c-good';
+ let pay='';
+ if(t>0){
+  const steps=t/c.kps,cap=MAX_STEPS-c.stepGoal,days=Math.ceil(steps/cap);
+  pay=`<div style="margin-top:10px">0-ra hozni: <b>${stepsTxt(steps)}</b>`;
+  if(t>c.bmr){const rest=Math.max(0,t-c.kcalT);pay+=` / <b>1 nap böjt${rest>0?' + '+stepsTxt(rest/c.kps):''}</b>`;}
+  pay+=`</div>`;
+  if(days>1)pay+=`<div class="hint">Naponta legfeljebb ${fmt(MAX_STEPS)} lépéssel ez kb. ${days} nap a lépéscéled fölött.</div>`;
+  if(t>c.bmr)pay+=`<div class="hint">Egy böjtnap a napi kalóriacélodnyit (${fmt(c.kcalT)} kcal) hoz le, ha közben a lépéscélt tartod.</div>`;
+ }else pay=`<div class="hint" style="margin-top:8px">Nincs tartozásod.</div>`;
+ const sg=v=>(v>0?'+':v<0?'−':'')+fmt(Math.abs(v));
+ return `<div class="card"><div class="row between"><div class="label" style="margin:0">Kalóriatartozás</div>
+  <button class="sm ghost" data-a="debtReset">Nullázás</button></div>
+ <div class="big ${cls}" style="margin-top:4px">${sg(t)} <span class="small muted" style="font-weight:600">kcal</span></div>
+ <div class="muted small">ma ${sg(st.live)} · korábbi napokból ${sg(st.carry)}</div>${pay}
+ <div class="hint">Tartozás = (bevitt − kalóriacél) + (lépéscél − megtett lépés) × ${dec(c.kps*1000,0)} kcal/ezer lépés. Negatív érték előnyt jelent.</div></div>`;
 }
 function goalLine(c){
  if(S.profile.goal==='maintain')return '';
@@ -445,11 +490,11 @@ function goalLine(c){
  return `<div style="margin-top:10px">Hozzávetőleges időtartam a cél eléréséig: <b>${c.weeks} hét</b>.</div><div class="hint">${dec(S.profile.weight)} → ${dec(c.goalW)} kg, kb. ${dec(Math.abs(c.weekly),2)} kg/hét</div>`;
 }
 function viewToday(){
- const k=dkey(),c=calc(),d=day(),rem=c.kcalT-c.eaten,extra=S.comp[k]||0;
+ const k=dkey(),c=calc(),d=day(),rem=c.kcalT-c.eaten;
  const rec=d.recovery!=null?`${d.recovery}/5 · ${LABELS[d.recovery-1]}`:`<button class="sm" data-a="askRecovery">Megadás</button>`;
  return `<h1>Ma</h1><div class="sub">${dateLong(k)}</div>
  ${adherenceCard()}
- ${compCard()}
+ ${debtCard()}
  <div class="card"><div class="label">Kalória · ${c.G.n}${d.fast?' · böjtnap':''}</div>
   <div class="big">${fmt(Math.abs(rem))}</div><div class="muted small">${rem>=0?'kcal maradt a mai célig':'kcal a mai cél fölött'}</div>
   ${bar(c.eaten,c.kcalT)}
@@ -458,7 +503,7 @@ function viewToday(){
    <div class="stat"><span>Elégetett ma</span><b>${fmt(c.burn)}</b><span>alap ${fmt(c.base)} + séta ${fmt(c.stepK)}</span></div>
   </div>${goalLine(c)}</div>
  <div class="card"><div class="row between"><div class="label" style="margin:0">Lépések</div><div class="muted small">${d.stepsAt?'frissítve '+hm(d.stepsAt):''}</div></div>
-  <div class="mid" style="margin-top:4px">${fmt(c.steps)}<span class="muted small"> / ${fmt(c.stepGoalDay)}${extra?` (ebből +${fmt(extra)} kompenzáció)`:''}</span></div>
+  <div class="mid" style="margin-top:4px">${fmt(c.steps)}<span class="muted small"> / ${fmt(c.stepGoalDay)}</span></div>
   ${bar(c.steps,c.stepGoalDay,true)}
   <form class="inline" data-form="steps" style="grid-template-columns:1fr auto auto"><input id="stepsIn" inputmode="numeric" placeholder="Lépésszám"><button class="sm" type="submit">Mentés</button><button class="sm" type="button" data-a="pasteSteps">Beillesztés</button></form></div>
  <div class="grid2" style="margin:0 0 12px">
@@ -637,8 +682,8 @@ document.addEventListener('click',e=>{
   case 'waterCustom':{const r=prompt('Mennyi vizet ittál? (dl)');if(r===null)return;const n=num(r);if(!(n>0&&n<50)){toast('Érvénytelen mennyiség.');return;}d.water.push({id:uid(),ml:Math.round(n*100)});save();render();break;}
   case 'waterUndo':d.water.pop();save();render();break;
   case 'delFood':d.food=d.food.filter(f=>f.id!==v);save();render();break;
-  case 'compAccept':{const o=compOffer();if(!o)return;o.plan.forEach(p=>{S.comp[p.k]=(S.comp[p.k]||0)+p.add;});S.compHandled[dkey()]=(S.compHandled[dkey()]||0)+o.excess;save();render();toast('Lépéscél megemelve '+o.plan.length+' napra.');break;}
-  case 'compDecline':{const o=compOffer();if(!o)return;S.compHandled[dkey()]=(S.compHandled[dkey()]||0)+o.excess;save();render();break;}
+  case 'scoreTab':S.scoreTab=v;save();render();break;
+  case 'debtReset':if(confirm('A korábbi napok tartozása (vagy előnye) törlődik, és mától indul újra a számolás. Biztos?')){S.debtFrom=dkey();save();render();toast('Kalóriatartozás nullázva.');}break;
   case 'unblock':S.blocked=S.blocked.filter(k=>k!==v);save();render();break;
   case 'delWeight':S.weights=S.weights.filter(w=>w.k!==v);save();render();break;
   case 'bwAdd':{const r=prompt(BW[v].n+' ('+BW[v].u+')');if(r===null)return;const n=Math.round(num(r));if(!(n>=0&&n<10000)){toast('Érvénytelen érték.');return;}S.results[v].push({val:n,k:dkey()});save();render();toast('Rögzítve.');break;}
