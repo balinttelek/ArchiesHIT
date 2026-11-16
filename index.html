@@ -87,6 +87,22 @@ h2{font-size:20px;margin:0 0 4px}
 .strings span{flex:1;text-align:center;padding:8px 0;border-radius:10px;background:var(--card2);font-weight:700;color:var(--muted)}
 .strings span.near{background:var(--accent);color:var(--accent-ink)}
 .strings span.ok{background:var(--good);color:#04130c}
+.tl{display:grid;gap:6px}
+.blk{display:flex;align-items:stretch;gap:10px;cursor:pointer;border-radius:12px;padding:8px 10px;background:var(--card2);border-left:5px solid var(--muted)}
+.blk .tm{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);min-width:92px;padding-top:1px}
+.blk .nm{font-weight:650}.blk .du{font-size:12.5px;color:var(--muted)}
+.blk.now{outline:2px solid var(--accent)}
+.blk.past{opacity:.55}
+.b-sleep{border-left-color:#6b7cff}.b-routine{border-left-color:#9aa0aa}.b-work{border-left-color:#3aa0ff}.b-workout{border-left-color:var(--accent)}
+.b-act{border-left-color:var(--good)}.b-meal{border-left-color:var(--warn)}.b-rest{border-left-color:#b48cff}.b-free{border-left-color:var(--line)}.b-custom{border-left-color:#ff6fb0}
+.sunbar{display:flex;align-items:center;gap:12px}
+.sunbar .grow b{display:block}
+.days7{display:flex;gap:4px}.days7 button{flex:1;min-height:38px;padding:0;font-size:13px}.days7 button.on{background:var(--accent);color:var(--accent-ink)}
+.rate10{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.rate10 button{font-size:20px;font-weight:750;padding:10px 0}.rate10 button.on{background:var(--accent);color:var(--accent-ink)}
+.jrow{border-top:1px solid var(--line);padding:10px 0}.jrow:first-child{border-top:0}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:12px;font-weight:800;font-size:18px;background:var(--card2)}
+textarea{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:80px;resize:vertical}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -156,10 +172,10 @@ code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:13px;wo
 <main id="app"></main>
 <nav id="nav" hidden><div class="in">
 <button data-a="tab" data-v="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ma</button>
+<button data-a="tab" data-v="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h7"/></svg>Napirend</button>
 <button data-a="tab" data-v="workout"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Edzés</button>
 <button data-a="tab" data-v="work"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>Munka</button>
 <button data-a="tab" data-v="acts"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>Tevékenység</button>
-<button data-a="tab" data-v="results"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>Rekordok</button>
 <button data-a="tab" data-v="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profil</button>
 </div></nav>
 <script>
@@ -229,7 +245,7 @@ const exById=id=>ALL_EX.find(e=>e.id===id);
 
 /* ---------- state ---------- */
 function fresh(){return {profile:null,days:{},workouts:[],rest:{hours:MIN_REST,log:[]},volume:[0,0,0,0,0],nextDay:0,pressFirst:false,session:null,blocked:[],comp:{},compHandled:{},
- tasks:[],acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
+ plan:{bed:'22:30',sleepH:8,workStart:'08:00',workEnd:'16:00',workDays:[1,2,3,4,5]},dayPlans:{},sleep:{},journal:{},tasks:[],acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){const f=fresh();const o=Object.assign(f,s);o.results=Object.assign(fresh().results,s.results||{});while(o.volume.length<4)o.volume.push(0);return o;}}catch(e){}return fresh();}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -544,6 +560,7 @@ function viewToday(){
  const k=dkey(),c=calc(),d=day(),rem=c.kcalT-c.eaten;
  const rec=d.recovery!=null?`${d.recovery}/5 · ${LABELS[d.recovery-1]}`:`<button class="sm" data-a="askRecovery">Megadás</button>`;
  return `<h1>Ma</h1><div class="sub">${dateLong(k)}</div>
+ ${sunBanner()}
  ${adherenceCard()}
  ${debtCard()}
  <div class="card"><div class="label">Kalória · ${c.G.n}${d.fast?' · böjtnap':''}</div>
@@ -611,7 +628,7 @@ function sessionView(){
 function viewWorkout(){
  if(S.session)return sessionView();
  const i=S.nextDay,ex=visibleEx(i),D=DAYS[i],vol=S.volume[i]||0,due=dueAt(),r=dueBefore(Infinity);
- let html=`<h1>Edzés</h1><div class="sub">Archie's HIT · ${i+1}. nap · ${D.name}</div>`;
+ let html=`<div class="row between"><h1>Edzés</h1><button class="sm" data-a="tab" data-v="results">Rekordok ›</button></div><div class="sub">Archie's HIT · ${i+1}. nap · ${D.name}</div>`;
  html+=workoutCard(false);
  html+=`<div class="notice">${NOTICE}</div>
  <div class="card"><div class="label">Gyakorlatok · ${ex.length} db${vol?` · −${vol} a teljesből`:''}</div>
@@ -637,7 +654,7 @@ function viewResults(){
  const ws=S.weights.slice().sort((a,b)=>a.k<b.k?1:-1);
  const lastAdj=S.bmrLog[S.bmrLog.length-1];
  const allIds=[...new Set([...DAYS.flatMap(D=>D.ex.map(e=>e.id)),...CAL.ex.map(e=>e.id)])];
- return `<h1>Eredmények</h1><div class="sub">Testsúly, saját testsúlyos rekordok és gyakorlatonkénti maximumok</div>
+ return `<button class="back" data-a="tab" data-v="workout">‹ Edzés</button><h1>Eredmények</h1><div class="sub">Testsúly, saját testsúlyos rekordok és gyakorlatonkénti maximumok</div>
  <div class="card"><div class="label">Testsúly</div><div class="mid">${dec(S.profile.weight)} kg</div>
   <form class="inline" data-form="weight"><input id="wIn" inputmode="decimal" placeholder="Mai testsúly (kg)"><button class="sm" type="submit">Mentés</button></form>
   ${ws.length?`<ul class="list small" style="margin-top:8px">${ws.slice(0,6).map(w=>`<li><div class="grow">${dateLong(w.k)}</div><div>${dec(w.kg)} kg</div><button class="x" data-a="delWeight" data-v="${w.k}" aria-label="Törlés">×</button></li>`).join('')}</ul>`:''}
@@ -945,12 +962,132 @@ async function restore(f){
  S=Object.assign(fresh(),d.state);S.session=null;save();S=load();render();toast('Visszatöltve'+(n?', '+n+' csatolmánnyal':'')+'.');
 }
 
+/* ---------- Golden Mean napirend ---------- */
+let planView='day',sumDay=null,sumRating=null,jOpen=null;
+const tm=t=>{const [h,m]=String(t).split(':').map(Number);return h*60+(m||0);};
+const tt=m=>{m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
+const durTxt=m=>{m=Math.round(m);const h=Math.floor(m/60),r=m%60;return h?(h+' ó'+(r?' '+r+' p':'')):r+' p';};
+function dayOf(ts){const d=new Date(ts);if(d.getHours()<5)d.setDate(d.getDate()-1);return dkey(d);}
+function sleepRec(k){return S.sleep[k]||(S.sleep[k]={});}
+function lastNight(k){const b=(S.sleep[addDays(k,-1)]||{}).bed,w=(S.sleep[k]||{}).wake;return b&&w&&w>b&&w-b<20*36e5?{bed:b,wake:w,ms:w-b}:null;}
+function isWorkday(k){return (S.plan.workDays||[]).includes(kdate(k).getDay());}
+function workoutDueOn(k){const due=dueAt();if(S.workouts.some(w=>!isCal(w)&&dkey(new Date(w.at))===k))return true;return due!=null&&dkey(new Date(due))<=k;}
+function genPlan(k){
+ const P=S.plan,wk=(S.sleep[k]||{}).wake;
+ let bed=tm(P.bed);let wake=bed+P.sleepH*60;
+ if(wk&&dkey(new Date(wk))===k){const d=new Date(wk);wake=Math.round((d.getHours()*60+d.getMinutes())/5)*5;}
+ wake=((wake%1440)+1440)%1440;if(bed<=wake)bed+=1440;
+ const B=[],busy=[];const add=(s,e,t,name)=>{if(e-s<5)return;B.push({id:'g'+t+s,s,e,t,name});busy.push([s,e]);};
+ const free=()=>{const iv=[];let cur=wake;busy.slice().sort((a,b)=>a[0]-b[0]).forEach(([s,e])=>{if(s>cur)iv.push([cur,s]);cur=Math.max(cur,e);});if(cur<bed)iv.push([cur,bed]);return iv;};
+ const place=(len,from,t,name)=>{for(const [s,e] of free()){const st=Math.max(s,from);if(e-st>=len){add(st,st+len,t,name);return st+len;}}return null;};
+ add(wake,wake+45,'routine','Reggeli rutin');
+ add(bed-60,bed,'rest','Esti levezetés, képernyő nélkül');
+ const work=isWorkday(k);let ws=tm(P.workStart),we=tm(P.workEnd);
+ if(work&&we>ws){ws=Math.max(ws,wake+45);we=Math.min(we,bed-60);if(we>ws){add(ws,we,'work','Munka');add(we,we+30,'rest','Átállás, pihenő');}}
+ if(!work)place(30,12*60+30,'meal','Ebéd');
+ place(30,Math.max(18*60+30,work?we+30:0),'meal','Vacsora');
+ if(workoutDueOn(k)){const i=S.nextDay;place(75,work?we+30:9*60+30,'workout','Edzés · '+DAYS[i].name);}
+ const acts=S.acts.filter(a=>a.goal>0).map(a=>({a,left:a.goal}));let missing=0;
+ let from=work&&we>ws?we:wake+45,guard=0;
+ while(acts.some(x=>x.left>0)&&guard++<60){
+  let progress=false;
+  for(const x of acts){if(x.left<=0)continue;const len=Math.min(60,x.left);const end=place(len,from,'act',x.a.name);
+   if(end==null){const iv=free().filter(([s,e])=>e-Math.max(s,from)>=20).sort((p,q)=>(q[1]-q[0])-(p[1]-p[0]))[0];
+    if(iv){const st=Math.max(iv[0],from),l=Math.min(len,iv[1]-st);if(l<20)continue;add(st,st+l,'act',x.a.name);x.left-=l;progress=true;place(10,st+l,'free','Szünet');}continue;}
+   x.left-=len;progress=true;if(x.left>0||acts.some(y=>y!==x&&y.left>0))place(10,end,'free','Szünet');}
+  if(!progress)break;
+ }
+ missing=acts.reduce((a,x)=>a+Math.max(0,x.left),0);
+ free().forEach(([s,e])=>{if(e-s>=20)add(s,e,'free','Szabadidő');});
+ B.sort((a,b)=>a.s-b.s);
+ return {blocks:B.filter(b=>!(b.t==='free'&&b.name==='Szünet'&&b.e-b.s<5)),wake,bed,missing,generated:true};
+}
+function planFor(k){const p=S.dayPlans[k];return p&&p.edited?p:genPlan(k);}
+function freezePlan(k){if(!S.dayPlans[k]||!S.dayPlans[k].edited){const g=genPlan(k);S.dayPlans[k]={blocks:g.blocks,wake:g.wake,bed:g.bed,missing:0,edited:true};}return S.dayPlans[k];}
+function nowMin(){const d=new Date();return d.getHours()*60+d.getMinutes()+(d.getHours()<5?1440:0);}
+function sunBanner(){
+ const k=dkey(),h=new Date().getHours(),r=S.sleep[k]||{},bk=dayOf(Date.now()),rb=S.sleep[bk]||{};
+ if(!r.wake&&h>=4&&h<15)return `<div class="card sunbar"><div class="grow"><b>Jó reggelt!</b><span class="muted small">Rögzítsd az ébredést, ehhez igazodik a mai napirend.</span></div><button class="primary" data-a="woke">Felébredtem</button></div>`;
+ if(!rb.bed&&(h>=20||h<5))return `<div class="card sunbar"><div class="grow"><b>Ideje lefeküdni?</b><span class="muted small">Lefekvéskor lezárod és értékeled a napot.</span></div><button class="primary" data-a="slept">Lefeküdtem</button></div>`;
+ return '';
+}
+function viewPlan(){
+ if(planView==='summary')return viewSummary();
+ if(planView==='journal')return viewJournal();
+ const k=dkey(),pl=planFor(k),n=nowMin(),ln=lastNight(k),r=S.sleep[k]||{};
+ const sleepMin=(pl.wake-(pl.bed-1440)+1440)%1440||S.plan.sleepH*60;
+ return `<div class="row between"><h1>Napirend</h1><button class="sm" data-a="planJournal">Mentett napok ›</button></div><div class="sub">${dateLong(k)} · ${isWorkday(k)?'munkanap':'szabadnap'}</div>
+ ${sunBanner()}
+ <div class="card"><div class="row between"><div class="label" style="margin:0">Alvás</div><div class="muted small">cél ${S.plan.sleepH} óra</div></div>
+  <div class="small" style="margin-top:4px">${ln?`Éjjel: ${hm(ln.bed)} → ${hm(ln.wake)} · <b>${durTxt(ln.ms/6e4)}</b>`:r.wake?`Ébredés: ${hm(r.wake)}`:'Ma még nem rögzítettél ébredést.'}</div>
+  <div class="row" style="margin-top:10px">${r.wake?'':'<button class="sm" data-a="woke">Felébredtem</button>'}<button class="sm" data-a="slept">Lefeküdtem</button></div></div>
+ <div class="card"><div class="row between"><div class="label" style="margin:0">${pl.generated?'Ajánlott beosztás':'Saját beosztás'}</div>
+  <div class="row" style="gap:6px">${pl.generated?'':'<button class="sm ghost" data-a="planReset">Ajánlás</button>'}<button class="sm" data-a="blockAdd">+ Blokk</button></div></div>
+  ${pl.missing>0?`<div class="hint c-warn" style="margin-bottom:8px">A tevékenységek napi céljaiból ${durTxt(pl.missing)} ma nem fér el. Érdemes a célokat csökkenteni, mint az alvásból elvenni.</div>`:''}
+  <div class="tl" style="margin-top:8px">
+   <div class="blk b-sleep"><div class="tm">${tt(pl.wake)}</div><div class="grow"><div class="nm">Ébredés</div><div class="du">${durTxt(sleepMin)} alvás után</div></div></div>
+   ${pl.blocks.map(b=>`<div class="blk b-${b.t} ${n>=b.s&&n<b.e?'now':n>=b.e?'past':''}" data-a="blockEdit" data-v="${b.id}"><div class="tm">${tt(b.s)}–${tt(b.e)}</div><div class="grow"><div class="nm">${esc(b.name)}</div><div class="du">${durTxt(b.e-b.s)}${n>=b.s&&n<b.e?' · most, még '+durTxt(b.e-n):''}</div></div></div>`).join('')}
+   <div class="blk b-sleep"><div class="tm">${tt(pl.bed)}</div><div class="grow"><div class="nm">Lefekvés</div><div class="du">${S.plan.sleepH} óra alvás a holnapi ${tt(pl.bed+S.plan.sleepH*60)}-as ébredésig</div></div></div>
+  </div>
+  <div class="hint">Koppints egy blokkra a módosításhoz. Az ajánlás a tevékenységeid napi céljaiból, a munkaidődből és az esedékes edzésből készül, óránként szünettel és esti levezetéssel.</div></div>
+ <button class="ghost block" style="margin-bottom:12px" data-a="openSummary">Nap lezárása és értékelése</button>
+ <div class="card"><div class="label">Beállítások</div>
+  <div class="grid2" style="margin-top:0">
+   <label class="field"><span>Lefekvés</span><input type="time" id="pl_bed" value="${S.plan.bed}"></label>
+   <label class="field"><span>Alvás (óra)</span><input id="pl_sleep" inputmode="decimal" value="${String(S.plan.sleepH).replace('.',',')}"></label>
+   <label class="field"><span>Munka kezdete</span><input type="time" id="pl_ws" value="${S.plan.workStart}"></label>
+   <label class="field"><span>Munka vége</span><input type="time" id="pl_we" value="${S.plan.workEnd}"></label></div>
+  <div class="field"><span>Munkanapok</span><div class="days7">${[[1,'H'],[2,'K'],[3,'Sze'],[4,'Cs'],[5,'P'],[6,'Szo'],[0,'V']].map(([d,l])=>`<button type="button" data-a="wdToggle" data-v="${d}" class="${S.plan.workDays.includes(d)?'on':''}">${l}</button>`).join('')}</div></div>
+  <button class="primary block" data-a="planSave">Mentés</button>
+  <div class="hint">A napi tevékenységcélokat a Tevékenység fülön állíthatod.</div></div>`;
+}
+function daySummary(k){
+ const ln=lastNight(k),c=calc(k);
+ const acts=S.acts.map(a=>({name:a.name,min:Math.round(actMs(a.id,null,k)/6e4),goal:a.goal||0})).filter(x=>x.min||x.goal);
+ const tasksDone=S.tasks.filter(t=>t.done&&t.doneDay===k).map(t=>t.title),tasksOpen=S.tasks.filter(t=>taskVisible(t,k)&&!taskDoneOn(t,k)).length;
+ const wo=S.workouts.filter(w=>dkey(new Date(w.at))===k).map(w=>({name:isCal(w)?'Calisthenics':DAYS[w.day].name,rating:w.rating}));
+ return {sleep:ln?{bed:ln.bed,wake:ln.wake,min:Math.round(ln.ms/6e4)}:null,acts,tasksDone,tasksOpen,workouts:wo,
+  kcal:Math.round(c.eaten),kcalT:Math.round(c.kcalT),steps:c.steps,stepGoal:c.stepGoal,debt:Math.round(dayDebt(k)),fast:!!(S.days[k]||{}).fast};
+}
+function summaryHtml(x){
+ return `<ul class="list small">
+  <li><div class="grow">Alvás</div><div>${x.sleep?`${hm(x.sleep.bed)} → ${hm(x.sleep.wake)} · <b>${durTxt(x.sleep.min)}</b>`:'nincs rögzítve'}</div></li>
+  ${x.acts.map(a=>`<li><div class="grow">${esc(a.name)}</div><div><b class="${a.goal&&a.min>=a.goal?'c-good':''}">${durTxt(a.min)}</b>${a.goal?' / '+durTxt(a.goal):''}</div></li>`).join('')}
+  <li><div class="grow">Munka</div><div>${x.tasksDone.length} feladat kész${x.tasksOpen?`, ${x.tasksOpen} nyitott`:''}</div></li>
+  <li><div class="grow">Edzés</div><div>${x.workouts.length?x.workouts.map(w=>esc(w.name)+' · '+w.rating+'/10').join(', '):'pihenőnap'}</div></li>
+  <li><div class="grow">Kalória</div><div>${x.fast?'böjtnap':fmt(x.kcal)+' / '+fmt(x.kcalT)+' kcal'}</div></li>
+  <li><div class="grow">Lépés</div><div>${fmt(x.steps)} / ${fmt(x.stepGoal)}</div></li>
+  <li><div class="grow">Kalóriatartozás</div><div class="${x.debt>0?'c-bad':'c-good'}">${x.debt>0?'+':''}${fmt(x.debt)} kcal</div></li></ul>
+  ${x.tasksDone.length?`<div class="hint">Kész: ${x.tasksDone.map(esc).join(', ')}</div>`:''}`;
+}
+function viewSummary(){
+ const k=sumDay||dayOf(Date.now()),x=daySummary(k),j=S.journal[k];
+ if(sumRating==null&&j)sumRating=j.rating;
+ return `<button class="back" data-a="planBack">‹ Napirend</button><h1>A nap összegzése</h1><div class="sub">${dateLong(k)}</div>
+ <div class="card">${summaryHtml(x)}</div>
+ <div class="card"><div class="label">Milyen volt a nap? (1-10)</div>
+  <div class="rate10">${Array.from({length:10},(_,i)=>`<button data-a="sumRate" data-v="${i+1}" class="${sumRating===i+1?'on':''}">${i+1}</button>`).join('')}</div>
+  <textarea id="sumNote" placeholder="Jegyzet a napról (nem kötelező)">${esc(j?j.note||'':'')}</textarea>
+  <button class="primary block" style="margin-top:10px" data-a="sumSave">${j?'Frissítés':'Nap mentése'}</button></div>`;
+}
+function viewJournal(){
+ const ks=Object.keys(S.journal).sort().reverse();
+ const avg=ks.length?ks.reduce((a,k)=>a+S.journal[k].rating,0)/ks.length:null;
+ return `<button class="back" data-a="planBack">‹ Napirend</button><h1>Mentett napok</h1><div class="sub">${ks.length?`${ks.length} nap · átlag ${dec(avg)}/10`:'Még nincs mentett nap.'}</div>
+ ${ks.length?`<div class="card">${ks.map(k=>{const j=S.journal[k],x=j.snap,op=jOpen===k,am=x.acts.reduce((a,b)=>a+b.min,0);
+  return `<div class="jrow"><div class="row" data-a="jToggle" data-v="${k}" style="cursor:pointer"><span class="badge c-${pctCls(j.rating/10)}">${j.rating}</span>
+   <div class="grow"><div style="font-weight:650">${dateLong(k)}</div><div class="muted small">${x.sleep?'alvás '+durTxt(x.sleep.min)+' · ':''}${am?'tevékenység '+durTxt(am)+' · ':''}${x.tasksDone.length} feladat</div></div><span class="muted">${op?'▾':'▸'}</span></div>
+   ${op?`<div style="margin-top:8px">${summaryHtml(x)}${j.note?`<div class="small" style="margin-top:8px;white-space:pre-wrap">${esc(j.note)}</div>`:''}
+    <div class="row" style="margin-top:8px"><button class="sm ghost" data-a="jEdit" data-v="${k}">Szerkesztés</button><button class="sm ghost danger" data-a="jDel" data-v="${k}">Törlés</button></div></div>`:''}</div>`;}).join('')}</div>`:''}`;
+}
+function parseRange(t){const m=String(t).match(/(\d{1,2})[:.]?(\d{2})?\s*[-–]\s*(\d{1,2})[:.]?(\d{2})?/);if(!m)return null;let s=+m[1]*60+(+m[2]||0),e=+m[3]*60+(+m[4]||0);if(s<5*60)s+=1440;if(e<=s)e+=1440;return e-s>=5&&e-s<=24*60?[s,e]:null;}
+
 function render(){
  const app=$('#app'),nav=$('#nav');
  if(!S.profile){app.innerHTML=profileForm(true);nav.hidden=true;return;}
  nav.hidden=false;
- nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===tab));
- app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='work'?viewWork():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
+ nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===(tab==='results'?'workout':tab)));
+ app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='plan'?viewPlan():tab==='work'?viewWork():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
  if(tab==='acts')hydrateMedia();
  maybeAskRecovery();
 }
@@ -982,7 +1119,35 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('[data-a]');if(!b)return;
  const a=b.dataset.a,v=b.dataset.v,d=day();
  switch(a){
-  case 'tab':tab=v;if(v!=='acts'){if(M.on)metroStop();tunerStop();}render();window.scrollTo(0,0);break;
+  case 'tab':tab=v;if(v==='plan')planView='day';if(v!=='acts'){if(M.on)metroStop();tunerStop();}render();window.scrollTo(0,0);break;
+  case 'woke':{const k=dkey();sleepRec(k).wake=Date.now();save();const ln=lastNight(k);render();toast(ln?'Jó reggelt! '+durTxt(ln.ms/6e4)+' alvás. A napirend ehhez igazodott.':'Jó reggelt! A napirend az ébredésedhez igazodott.');break;}
+  case 'slept':{const k=dayOf(Date.now());sleepRec(k).bed=Date.now();save();tab='plan';planView='summary';sumDay=k;sumRating=S.journal[k]?S.journal[k].rating:null;render();window.scrollTo(0,0);break;}
+  case 'openSummary':planView='summary';sumDay=dayOf(Date.now());sumRating=S.journal[sumDay]?S.journal[sumDay].rating:null;render();window.scrollTo(0,0);break;
+  case 'planBack':planView='day';render();window.scrollTo(0,0);break;
+  case 'planJournal':planView='journal';render();window.scrollTo(0,0);break;
+  case 'sumRate':sumRating=+v;document.querySelectorAll('.rate10 button').forEach(x=>x.classList.toggle('on',+x.dataset.v===sumRating));break;
+  case 'sumSave':{if(!sumRating){toast('Előbb értékeld a napot 1 és 10 között.');return;}const k=sumDay||dayOf(Date.now());
+   S.journal[k]={rating:sumRating,note:($('#sumNote').value||'').trim(),savedAt:Date.now(),snap:daySummary(k)};save();planView='journal';jOpen=k;render();window.scrollTo(0,0);toast('A nap elmentve.');break;}
+  case 'jToggle':jOpen=jOpen===v?null:v;render();break;
+  case 'jEdit':planView='summary';sumDay=v;sumRating=S.journal[v].rating;render();window.scrollTo(0,0);break;
+  case 'jDel':if(confirm('Törlöd ennek a napnak a mentését?')){delete S.journal[v];save();render();}break;
+  case 'wdToggle':b.classList.toggle('on');break;
+  case 'planSave':{const sh=num($('#pl_sleep').value);if(!(sh>=4&&sh<=12)){toast('Az alvás 4 és 12 óra között lehet.');return;}
+   const bed=$('#pl_bed').value,ws=$('#pl_ws').value,we=$('#pl_we').value;if(!bed||!ws||!we){toast('Adj meg minden időpontot.');return;}
+   if(sh<7)toast('7 óránál kevesebb alvás hosszú távon nem fenntartható, de elmentettem.');
+   S.plan={bed,sleepH:sh,workStart:ws,workEnd:we,workDays:[...document.querySelectorAll('.days7 button.on')].map(x=>+x.dataset.v)};
+   const k=dkey();if(S.dayPlans[k]&&S.dayPlans[k].edited&&confirm('A mai napot kézzel módosítottad. Újraosztod az új beállítások szerint?'))delete S.dayPlans[k];
+   save();render();if(sh>=7)toast('Beállítások mentve.');break;}
+  case 'planReset':if(confirm('Visszaállítod a mai napot az ajánlott beosztásra? A kézi módosítások elvesznek.')){delete S.dayPlans[dkey()];save();render();}break;
+  case 'blockEdit':{const k=dkey(),pl=freezePlan(k),bl=pl.blocks.find(x=>x.id===v);if(!bl)return;
+   const n=prompt('Blokk neve (üresen hagyva törlöd)',bl.name);if(n===null)return;
+   if(!n.trim()){pl.blocks=pl.blocks.filter(x=>x.id!==v);save();render();return;}
+   const r=prompt('Időtartam (pl. 18:00-19:30)',tt(bl.s)+'-'+tt(bl.e));if(r===null)return;const rg=parseRange(r);if(!rg){toast('Érvénytelen időtartam.');return;}
+   bl.name=n.trim();[bl.s,bl.e]=rg;if(bl.t==='free'&&n.trim()!=='Szabadidő'&&n.trim()!=='Szünet')bl.t='custom';pl.blocks.sort((a,b)=>a.s-b.s);save();render();break;}
+  case 'blockAdd':{const k=dkey(),pl=freezePlan(k);const n=prompt('Új blokk neve');if(!n||!n.trim())return;
+   const r=prompt('Időtartam (pl. 18:00-19:30)');if(r===null)return;const rg=parseRange(r);if(!rg){toast('Érvénytelen időtartam.');return;}
+   const act=S.acts.find(a=>a.name.toLowerCase()===n.trim().toLowerCase());
+   pl.blocks.push({id:uid(),s:rg[0],e:rg[1],t:act?'act':'custom',name:n.trim()});pl.blocks.sort((a,b)=>a.s-b.s);save();render();break;}
   case 'workDay':workDay=+v===0?null:addDays(workDay||dkey(),+v);if(workDay===dkey())workDay=null;taskOpen=null;render();break;
   case 'taskToggle':{const t=S.tasks.find(x=>x.id===v),k=workDay||dkey();if(!t)return;setTaskDone(t,!taskDoneOn(t,k),k);save();render();break;}
   case 'subToggle':{const [tid,sid]=v.split('|'),t=S.tasks.find(x=>x.id===tid),x=t&&t.subs.find(y=>y.id===sid),k=workDay||dkey();if(!x)return;
