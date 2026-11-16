@@ -39,6 +39,19 @@ h2{font-size:20px;margin:0 0 4px}
 .grid3 button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:1px solid transparent}
 .grid3 button b{font-size:24px;font-variant-numeric:tabular-nums}.grid3 button span{font-size:11.5px;color:var(--muted);font-weight:600}
 .grid3 button.on{border-color:var(--accent)}
+.act{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.act:first-child{border-top:0}
+.act .t{font-variant-numeric:tabular-nums;font-size:22px;font-weight:750;min-width:84px;text-align:right}
+.runbar{position:sticky;top:0;z-index:30;background:var(--accent);color:var(--accent-ink);border-radius:14px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:650}
+.runbar .grow{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.runbar button{background:rgba(0,0,0,.18);color:inherit;min-height:34px;padding:4px 12px;font-size:14px}
+.play{width:56px;min-width:56px;height:56px;border-radius:50%;padding:0;font-size:22px}
+.play.on{background:var(--bad);color:#fff}
+.bpm{font-size:56px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+.beats{display:flex;justify-content:center;gap:10px;margin:14px 0}
+.beats i{width:16px;height:16px;border-radius:50%;background:var(--card2);transition:background .05s}
+.beats i.on{background:var(--accent)}.beats i.acc.on{background:var(--warn)}
+.back{background:transparent;color:var(--accent);padding:0;min-height:32px;font-size:16px}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -77,7 +90,7 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .inline{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:40}
 nav .in{display:flex;gap:4px;max-width:560px;width:100%}
-nav button{flex:1;background:transparent;color:var(--muted);font-size:11.5px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button{flex:1;min-width:0;background:transparent;color:var(--muted);font-size:10.5px;padding:4px 0;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button.on{color:var(--accent)}
 nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--muted);margin-left:4px;vertical-align:2px;white-space:nowrap}
@@ -109,6 +122,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:13px;wo
 <nav id="nav" hidden><div class="in">
 <button data-a="tab" data-v="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ma</button>
 <button data-a="tab" data-v="workout"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Edzés</button>
+<button data-a="tab" data-v="acts"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>Tevékenység</button>
 <button data-a="tab" data-v="results"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>Eredmények</button>
 <button data-a="tab" data-v="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profil</button>
 </div></nav>
@@ -179,7 +193,7 @@ const exById=id=>ALL_EX.find(e=>e.id===id);
 
 /* ---------- state ---------- */
 function fresh(){return {profile:null,days:{},workouts:[],rest:{hours:MIN_REST,log:[]},volume:[0,0,0,0,0],nextDay:0,pressFirst:false,session:null,blocked:[],comp:{},compHandled:{},
- weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
+ acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){const f=fresh();const o=Object.assign(f,s);o.results=Object.assign(fresh().results,s.results||{});while(o.volume.length<4)o.volume.push(0);return o;}}catch(e){}return fresh();}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -625,12 +639,101 @@ function viewSettings(){
  <button class="ghost block danger" data-a="resetAll">Minden adat törlése</button>`;
 }
 
+
+/* ---------- alternatív tevékenységek ---------- */
+let actOpen=null;
+function actById(id){return S.acts.find(a=>a.id===id);}
+function subById(a,id){return a&&a.subs.find(x=>x.id===id);}
+function hms(ms){const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sec=t%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(sec).padStart(2,'0');}
+function hmText(ms){const m=Math.round(ms/6e4),h=Math.floor(m/60),r=m%60;return h?(h+' óra'+(r?' '+r+' perc':'')):r+' perc';}
+function runMs(){return S.timer?Date.now()-S.timer.start:0;}
+function actMs(actId,subId,dayK){
+ let ms=S.actLog.filter(l=>l.act===actId&&(!subId||l.sub===subId)&&(!dayK||dkey(new Date(l.start))===dayK)).reduce((a,l)=>a+(l.end-l.start),0);
+ const t=S.timer;if(t&&t.act===actId&&(!subId||t.sub===subId)&&(!dayK||dkey(new Date(t.start))===dayK))ms+=runMs();
+ return ms;
+}
+function stopTimer(){
+ const t=S.timer;if(!t)return 0;const end=Date.now(),ms=end-t.start;
+ if(ms>=5000)S.actLog.push({id:uid(),act:t.act,sub:t.sub,start:t.start,end});
+ S.timer=null;save();return ms;
+}
+function startTimer(act,sub){if(S.timer)stopTimer();S.timer={act,sub,start:Date.now()};save();}
+function runBar(){
+ const t=S.timer;if(!t||(tab==='acts'&&actOpen===t.act))return '';const a=actById(t.act),sb=subById(a,t.sub);if(!a){S.timer=null;return '';}
+ return `<div class="runbar"><span>⏱</span><div class="grow">${esc(sb?sb.name:a.name)}</div><b data-live="run">${hms(runMs())}</b><button data-a="timerStop">Leállítás</button></div>`;
+}
+function viewActs(){
+ const a=actOpen&&actById(actOpen);
+ if(!a){
+  return `<h1>Alternatív tevékenységek</h1><div class="sub">Hobbik és gyakorlás, stopperrel és napi céllal</div>
+  ${S.acts.length?`<div class="card">${S.acts.map(x=>{const today=actMs(x.id,null,dkey()),goal=(x.goal||0)*6e4;
+   return `<div class="act" data-a="openAct" data-v="${x.id}" style="cursor:pointer"><div class="grow"><div style="font-weight:650;font-size:18px">${esc(x.name)}</div>
+    <div class="muted small">ma ${hmText(today)}${goal?' / '+hmText(goal):''} · összesen ${hmText(actMs(x.id))}</div>${goal?bar(today,goal,true):''}</div><span class="muted" style="font-size:22px">›</span></div>`;}).join('')}</div>`:''}
+  <div class="card"><div class="label">Új tevékenység</div>
+   <form data-form="newAct" style="display:grid;grid-template-columns:1fr 110px;gap:8px">
+    <input id="actName" placeholder="pl. Gitározás" autocomplete="off"><input id="actGoal" inputmode="numeric" placeholder="perc/nap">
+    <button class="primary" type="submit" style="grid-column:1/-1">Létrehozás</button></form></div>`;
+ }
+ const today=actMs(a.id,null,dkey()),goal=(a.goal||0)*6e4,total=actMs(a.id),pct=goal?today/goal:0;
+ const recent=S.actLog.filter(l=>l.act===a.id).slice(-8).reverse();
+ return `<button class="back" data-a="closeAct">‹ Tevékenységek</button>
+ <h1>${esc(a.name)}</h1><div class="sub">Összesen <b data-live="total">${hmText(total)}</b> ${esc(a.name.toLowerCase())} rögzítve</div>
+ <div class="card"><div class="row between"><div class="label" style="margin:0">Mai cél</div><button class="sm ghost" data-a="editAct" data-v="${a.id}">Szerkesztés</button></div>
+  <div class="mid"><span data-live="today">${hmText(today)}</span><span class="muted small"> / ${goal?hmText(goal):'nincs cél'}</span></div>
+  ${goal?`<div class="bar"><i class="${pct>=1?'good':''}" style="width:${Math.min(100,pct*100)}%"></i></div><div class="hint">${pct>=1?(today>goal?'Teljesítve, +'+hmText(today-goal)+' a cél fölött.':'Teljesítve.'):'Még '+hmText(goal-today)+' van hátra.'}</div>`:''}</div>
+ <div class="card"><div class="label">Gyakorlási területek</div>
+  ${a.subs.length?a.subs.map(sb=>{const on=S.timer&&S.timer.sub===sb.id;
+   return `<div class="act"><button class="play ${on?'on':'primary'}" data-a="${on?'timerStop':'timerStart'}" data-v="${sb.id}" aria-label="${on?'Leállítás':'Indítás'}">${on?'■':'▶'}</button>
+    <div class="grow"><div style="font-weight:650">${esc(sb.name)}</div><div class="muted small">ma ${hmText(actMs(a.id,sb.id,dkey()))} · összesen ${hmText(actMs(a.id,sb.id))}</div></div>
+    <div class="t">${on?`<span data-live="run">${hms(runMs())}</span>`:''}</div></div>`;}).join(''):'<div class="hint">Adj hozzá egy területet, pl. Blues improvizáció, és indítsd a stoppert.</div>'}
+  <form class="inline" data-form="newSub"><input id="subName" placeholder="Új terület, pl. Blues improvizáció" autocomplete="off"><button class="sm" type="submit">Hozzáadás</button></form></div>
+ ${metroCard()}
+ <div class="card"><div class="row between"><div class="label" style="margin:0">Legutóbbi alkalmak</div><button class="sm ghost" data-a="manualLog">Kézi rögzítés</button></div>
+  ${recent.length?`<ul class="list small" style="margin-top:6px">${recent.map(l=>{const sb=subById(a,l.sub);return `<li><div class="grow">${esc(sb?sb.name:'?')}<div class="muted">${when(l.start)}</div></div><div>${hmText(l.end-l.start)}</div><button class="x" data-a="delLog" data-v="${l.id}" aria-label="Törlés">×</button></li>`;}).join('')}</ul>`:'<div class="hint">Még nincs rögzített alkalom.</div>'}</div>`;
+}
+
+/* ---------- metronóm (Web Audio, előre ütemezett kattanások) ---------- */
+const M={ctx:null,on:false,next:0,beat:0,timer:null,taps:[]};
+function metroCard(){
+ const m=S.metro;
+ return `<div class="card"><div class="label">Metronóm</div>
+ <div class="row between" style="margin-top:6px"><button class="sm" data-a="bpm" data-v="-5">−5</button><button class="sm" data-a="bpm" data-v="-1">−1</button>
+  <div class="bpm" id="bpmVal">${m.bpm}</div><button class="sm" data-a="bpm" data-v="1">+1</button><button class="sm" data-a="bpm" data-v="5">+5</button></div>
+ <div class="muted small" style="text-align:center">BPM</div>
+ <input type="range" id="bpmRange" min="30" max="260" value="${m.bpm}">
+ <div class="beats" id="beats">${Array.from({length:m.beats||1},(_,i)=>`<i class="${i===0&&m.beats>1?'acc':''}"></i>`).join('')}</div>
+ <div class="field"><span>Ütem</span>${seg('beats',[['1','—'],['2','2/4'],['3','3/4'],['4','4/4'],['6','6/8']],String(m.beats),'mini')}</div>
+ <div class="row"><button class="${M.on?'danger ghost':'primary'} grow" data-a="metro">${M.on?'Stop':'Indítás'}</button><button data-a="tap">Tap</button></div>
+ <div class="hint">iPhone-on a némítókapcsoló elnémíthatja. Képernyőzáráskor leáll.</div></div>`;
+}
+function click(time,acc){
+ const o=M.ctx.createOscillator(),g=M.ctx.createGain();o.frequency.value=acc?1500:1000;
+ g.gain.setValueAtTime(0.0001,time);g.gain.exponentialRampToValueAtTime(acc?0.9:0.55,time+0.001);g.gain.exponentialRampToValueAtTime(0.0001,time+0.05);
+ o.connect(g).connect(M.ctx.destination);o.start(time);o.stop(time+0.06);
+}
+function sched(){
+ while(M.next<M.ctx.currentTime+0.12){
+  const n=S.metro.beats||1,b=M.beat%n;click(M.next,n>1&&b===0);
+  const delay=Math.max(0,(M.next-M.ctx.currentTime)*1000);setTimeout(()=>flash(b),delay);
+  M.next+=60/S.metro.bpm;M.beat++;
+ }
+}
+function flash(b){const el=document.querySelectorAll('#beats i');el.forEach((x,i)=>x.classList.toggle('on',i===b));setTimeout(()=>el.forEach(x=>x.classList.remove('on')),90);}
+function metroStart(){
+ if(!M.ctx)M.ctx=new (window.AudioContext||window.webkitAudioContext)();
+ M.ctx.resume();M.on=true;M.beat=0;M.next=M.ctx.currentTime+0.06;sched();M.timer=setInterval(sched,25);
+}
+function metroStop(){M.on=false;clearInterval(M.timer);M.timer=null;}
+function setBpm(v){S.metro.bpm=Math.max(30,Math.min(260,Math.round(v)));save();const a=$('#bpmVal'),r=$('#bpmRange');if(a)a.textContent=S.metro.bpm;if(r)r.value=S.metro.bpm;}
+setInterval(()=>{if(!S.timer)return;document.querySelectorAll('[data-live=run]').forEach(e=>e.textContent=hms(runMs()));
+ if(tab==='acts'&&actOpen){const t=$('[data-live=today]'),T=$('[data-live=total]');if(t)t.textContent=hmText(actMs(actOpen,null,dkey()));if(T)T.textContent=hmText(actMs(actOpen));}},1000);
+
 function render(){
  const app=$('#app'),nav=$('#nav');
  if(!S.profile){app.innerHTML=profileForm(true);nav.hidden=true;return;}
  nav.hidden=false;
  nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===tab));
- app.innerHTML=tab==='workout'?viewWorkout():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday();
+ app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
  maybeAskRecovery();
 }
 
@@ -661,8 +764,25 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('[data-a]');if(!b)return;
  const a=b.dataset.a,v=b.dataset.v,d=day();
  switch(a){
-  case 'tab':tab=v;render();window.scrollTo(0,0);break;
+  case 'tab':tab=v;if(v!=='acts'&&M.on)metroStop();render();window.scrollTo(0,0);break;
+  case 'openAct':actOpen=v;render();window.scrollTo(0,0);break;
+  case 'closeAct':actOpen=null;if(M.on)metroStop();render();break;
+  case 'timerStart':startTimer(actOpen,v);render();break;
+  case 'timerStop':{const ms=stopTimer();render();toast(ms<5000?'Túl rövid, nem rögzítettem.':hmText(ms)+' rögzítve.');break;}
+  case 'delLog':if(confirm('Törlöd ezt az alkalmat?')){S.actLog=S.actLog.filter(l=>l.id!==v);save();render();}break;
+  case 'editAct':{const a=actById(v);const n=prompt('Név',a.name);if(n===null)return;
+   if(!n.trim()){if(confirm('Üres név: törlöd a(z) '+a.name+' tevékenységet és minden rögzített idejét?')){S.acts=S.acts.filter(x=>x.id!==v);S.actLog=S.actLog.filter(l=>l.act!==v);if(S.timer&&S.timer.act===v)S.timer=null;actOpen=null;save();render();}return;}
+   const g=prompt('Napi cél (perc, 0 = nincs)',a.goal||0);if(g===null)return;a.name=n.trim();a.goal=Math.max(0,Math.round(num(g)||0));save();render();break;}
+  case 'manualLog':{const a=actById(actOpen);if(!a.subs.length){toast('Előbb adj hozzá egy területet.');return;}
+   const names=a.subs.map((x,i)=>(i+1)+'. '+x.name).join('\n');const i=prompt('Melyik terület?\n'+names,'1');if(i===null)return;const sb=a.subs[Math.round(num(i))-1];if(!sb){toast('Nincs ilyen terület.');return;}
+   const m=prompt('Hány percet gyakoroltál ma?');if(m===null)return;const mins=num(m);if(!(mins>0&&mins<=1440)){toast('Érvénytelen időtartam.');return;}
+   const end=Date.now();S.actLog.push({id:uid(),act:a.id,sub:sb.id,start:end-mins*6e4,end});save();render();toast(hmText(mins*6e4)+' rögzítve.');break;}
+  case 'bpm':setBpm(S.metro.bpm+(+v));break;
+  case 'metro':if(M.on)metroStop();else metroStart();render();break;
+  case 'tap':{const t=performance.now();M.taps=M.taps.filter(x=>t-x<2500);M.taps.push(t);
+   if(M.taps.length>=2){const d=(M.taps[M.taps.length-1]-M.taps[0])/(M.taps.length-1);setBpm(60000/d);}break;}
   case 'seg':{const g=b.closest('.seg');g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));$('#f_'+g.dataset.seg).value=v;
+   if(g.dataset.seg==='beats'){S.metro.beats=+v;M.beat=0;save();render();}
    if(g.dataset.seg.startsWith('eq_')&&S.session){const id=g.dataset.seg.slice(3);const en=S.session.entries[id]||(S.session.entries[id]={});en.eq=v;save();
     const reco=g.closest('.ex').querySelector('.reco');if(reco)reco.textContent=recommend(exById(id),S.session.gym,v);}
    break;}
@@ -735,6 +855,12 @@ document.addEventListener('submit',e=>{
   if(!(kcal>=0)){toast('Add meg a kalóriát.');return;}
   day().food.push({id:uid(),name,kcal:Math.round(kcal),protein:p>0?Math.round(p*10)/10:0});save();render();
   const n=$('#fn');if(n)n.focus();
+ }else if(f==='newAct'){
+  const n=$('#actName').value.trim(),g=Math.round(num($('#actGoal').value)||0);if(!n){toast('Adj nevet a tevékenységnek.');return;}
+  const a={id:uid(),name:n,goal:Math.max(0,g),subs:[]};S.acts.push(a);actOpen=a.id;save();render();
+ }else if(f==='newSub'){
+  const n=$('#subName').value.trim();if(!n){toast('Adj nevet a területnek.');return;}
+  actById(actOpen).subs.push({id:uid(),name:n});save();render();
  }else if(f==='steps'){
   const n=Math.round(num($('#stepsIn').value));if(!isFinite(n)||n<0||n>100000){toast('Érvénytelen lépésszám.');return;}
   const d=day();d.steps=n;d.stepsAt=Date.now();save();render();
@@ -751,6 +877,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='fn'){e.preventDefault();$('#fk').focus();}});
 document.addEventListener('input',e=>{
  const t=e.target;
+ if(t.id==='bpmRange'){setBpm(+t.value);return;}
  if(t.id==='f_sg'){$('#sgv').textContent=fmt(+t.value);return;}
  if(t.id==='gymIn'&&S.session){S.session.gym=t.value.trim();save();return;}
  if(!t.dataset.in||!S.session)return;
