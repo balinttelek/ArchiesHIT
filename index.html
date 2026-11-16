@@ -470,7 +470,8 @@ function profileForm(first){
   <div class="hint">Minél magasabb, annál gyorsabb a fogyás. A kalóriacélt fogyásnál nem változtatja.</div></div>
  ${first?'':`<label class="field"><span>Napi kalóriacél (kcal)</span><input id="f_kcal" inputmode="numeric" placeholder="Ajánlott: ${fmt(T.rec)}" value="${P.kcalOverride??''}"><div class="hint">Üresen hagyva az ajánlott értéket használja. Minimum ${fmt(KCAL_FLOOR)} kcal.</div></label>
  <label class="field"><span>Napi vízcél (ml)</span><input id="f_water" inputmode="numeric" placeholder="Ajánlott: ${fmt(T.waterRec)}" value="${P.waterTarget??''}"><div class="hint">Üresen hagyva az ajánlott érték (35 ml/kg).</div></label>`}
- <button class="primary block" data-a="saveProfile">${first?'Kezdés':'Mentés'}</button></div>`;
+ <button class="primary block" data-a="saveProfile">${first?'Kezdés':'Mentés'}</button></div>
+ ${first?`<label class="ghost block" style="display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;font-weight:600;min-height:44px;cursor:pointer">Van mentésem: visszatöltés<input type="file" accept=".json,application/json" id="restoreIn" hidden></label>`:''}`;
 }
 
 function nextText(){
@@ -663,6 +664,11 @@ function viewSettings(){
   </ol>
   <div class="small">Futtasd a Parancsot, nyisd meg az appot, és a Lépések kártyán nyomd meg a <b>Beillesztés</b> gombot.</div>
   <div class="hint">Alternatíva Safarihoz: az utolsó lépés helyett <b>URL-ek megnyitása</b> ezzel: <code>${esc(url)}?steps=</code> + Kerekített szám. Ez a Safariba ír, nem a telepített appba, a kettő adatai külön tárolódnak.</div></div>
+ <div class="card"><div class="label">Mentés és visszatöltés</div>
+  <div class="small">Egy fájlba menti minden adatodat, a trófeák csatolmányaival együtt. Ezzel tudod az appot törölni és újra hozzáadni (pl. az új ikonért), vagy másik telefonra átvinni.</div>
+  <div class="row" style="margin-top:12px"><button class="primary grow" data-a="backup">Mentés fájlba</button>
+  <label class="grow" style="display:flex;align-items:center;justify-content:center;background:var(--card2);border-radius:12px;font-weight:600;min-height:44px;cursor:pointer">Visszatöltés<input type="file" accept=".json,application/json" id="restoreIn" hidden></label></div>
+  <div class="hint">Mentés után a felugró ablakban válaszd a „Mentés a Fájlokba” lehetőséget.</div></div>
  <button class="ghost block danger" data-a="resetAll">Minden adat törlése</button>`;
 }
 
@@ -850,6 +856,26 @@ function taskHtml(t,k){
   ${openSubs?`<form class="inline" data-form="newSubTask" data-v="${t.id}" style="margin:4px 0 8px"><input id="subTaskIn" placeholder="Új alfeladat" autocomplete="off"><button class="sm" type="submit">Hozzáadás</button></form>`:''}</div>`:''}</div>`;
 }
 
+/* ---------- mentés / visszatöltés ---------- */
+function b64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob);});}
+async function backup(){
+ toast('Mentés készül…');
+ const media={};
+ for(const a of S.acts)for(const t of a.trophies||[])for(const m of t.media||[]){try{const b=await getBlob(m.id);if(b)media[m.id]=await b64(b);}catch(e){}}
+ const data=JSON.stringify({app:'golden-mean',v:1,at:new Date().toISOString(),state:S,media});
+ const name='golden-mean-mentes-'+dkey()+'.json',file=new File([data],name,{type:'application/json'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});toast('Mentés kész.');return;}}catch(e){if(e&&e.name==='AbortError')return;}
+ const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+ toast('Mentés kész: '+name);
+}
+async function restore(f){
+ let d;try{d=JSON.parse(await f.text());}catch(e){toast('Ez nem érvényes mentésfájl.');return;}
+ if(!d||d.app!=='golden-mean'||!d.state||!d.state.profile){toast('Ez nem Golden Mean mentés.');return;}
+ if(!confirm('A visszatöltés felülírja a jelenlegi adatokat ezen az eszközön. Folytatod?'))return;
+ let n=0;for(const [id,url] of Object.entries(d.media||{})){try{const blob=await (await fetch(url)).blob();await putBlob(id,blob);n++;}catch(e){}}
+ S=Object.assign(fresh(),d.state);S.session=null;save();S=load();render();toast('Visszatöltve'+(n?', '+n+' csatolmánnyal':'')+'.');
+}
+
 function render(){
  const app=$('#app'),nav=$('#nav');
  if(!S.profile){app.innerHTML=profileForm(true);nav.hidden=true;return;}
@@ -988,6 +1014,7 @@ document.addEventListener('click',e=>{
     const due=dueAt();toast(msg+(due?' Következő edzés: '+when(due)+'.':''));},'Mégse',10);break;}
   case 'resetRest':S.rest.hours=MIN_REST;logRest('Pihenő kézzel visszaállítva 48 órára');save();render();break;
   case 'resetVolume':S.volume=[0,0,0,0];logRest('Volumen kézzel visszaállítva teljesre');save();render();break;
+  case 'backup':backup();break;
   case 'resetAll':if(confirm('Minden adat törlődik: profil, napló, edzések, eredmények. Biztos?')){S=fresh();save();render();}break;
  }
 });
@@ -1040,7 +1067,7 @@ document.addEventListener('input',e=>{
  save();
 });
 document.addEventListener('change',e=>{if(e.target.id==='gymIn'&&S.session)render();});
-document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.file)return;const f=t.files&&t.files[0];if(!f)return;
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='restoreIn'&&t.files&&t.files[0]){restore(t.files[0]);t.value='';return;}if(!t.dataset||!t.dataset.file)return;const f=t.files&&t.files[0];if(!f)return;
  if(f.size>300*1048576&&!confirm('Ez a fájl '+Math.round(f.size/1048576)+' MB. A nagy videók gyorsan betöltik a telefon tárhelyét. Így is csatolod?'))return;
  attachBlob(t.dataset.file,f,f.name);});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){S=load();render();}});
