@@ -672,6 +672,7 @@ function viewActs(){
   <div class="card"><div class="label">Új tevékenység</div>
    <form data-form="newAct" style="display:grid;grid-template-columns:1fr 110px;gap:8px">
     <input id="actName" placeholder="pl. Gitározás" autocomplete="off"><input id="actGoal" inputmode="numeric" placeholder="perc/nap">
+    <div style="grid-column:1/-1"><div class="small muted" style="margin-bottom:5px">Metronóm</div>${seg('newMetro',[['1','Kell'],['0','Nem kell']],'1')}</div>
     <button class="primary" type="submit" style="grid-column:1/-1">Létrehozás</button></form></div>`;
  }
  const today=actMs(a.id,null,dkey()),goal=(a.goal||0)*6e4,total=actMs(a.id),pct=goal?today/goal:0;
@@ -687,16 +688,17 @@ function viewActs(){
     <div class="grow"><div style="font-weight:650">${esc(sb.name)}</div><div class="muted small">ma ${hmText(actMs(a.id,sb.id,dkey()))} · összesen ${hmText(actMs(a.id,sb.id))}</div></div>
     <div class="t">${on?`<span data-live="run">${hms(runMs())}</span>`:''}</div></div>`;}).join(''):'<div class="hint">Adj hozzá egy területet, pl. Blues improvizáció, és indítsd a stoppert.</div>'}
   <form class="inline" data-form="newSub"><input id="subName" placeholder="Új terület, pl. Blues improvizáció" autocomplete="off"><button class="sm" type="submit">Hozzáadás</button></form></div>
- ${metroCard()}
+ ${a.metro!==false?metroCard():''}
  <div class="card"><div class="row between"><div class="label" style="margin:0">Legutóbbi alkalmak</div><button class="sm ghost" data-a="manualLog">Kézi rögzítés</button></div>
-  ${recent.length?`<ul class="list small" style="margin-top:6px">${recent.map(l=>{const sb=subById(a,l.sub);return `<li><div class="grow">${esc(sb?sb.name:'?')}<div class="muted">${when(l.start)}</div></div><div>${hmText(l.end-l.start)}</div><button class="x" data-a="delLog" data-v="${l.id}" aria-label="Törlés">×</button></li>`;}).join('')}</ul>`:'<div class="hint">Még nincs rögzített alkalom.</div>'}</div>`;
+  ${recent.length?`<ul class="list small" style="margin-top:6px">${recent.map(l=>{const sb=subById(a,l.sub);return `<li><div class="grow">${esc(sb?sb.name:'?')}<div class="muted">${when(l.start)}</div></div><div>${hmText(l.end-l.start)}</div><button class="x" data-a="delLog" data-v="${l.id}" aria-label="Törlés">×</button></li>`;}).join('')}</ul>`:'<div class="hint">Még nincs rögzített alkalom.</div>'}</div>
+ ${a.metro===false?'<button class="ghost block" data-a="metroAdd">Metronóm hozzáadása</button>':''}`;
 }
 
 /* ---------- metronóm (Web Audio, előre ütemezett kattanások) ---------- */
 const M={ctx:null,on:false,next:0,beat:0,timer:null,taps:[]};
 function metroCard(){
  const m=S.metro;
- return `<div class="card"><div class="label">Metronóm</div>
+ return `<div class="card"><div class="row between"><div class="label" style="margin:0">Metronóm</div><button class="sm ghost" data-a="metroRemove">Eltávolítás</button></div>
  <div class="row between" style="margin-top:6px"><button class="sm" data-a="bpm" data-v="-5">−5</button><button class="sm" data-a="bpm" data-v="-1">−1</button>
   <div class="bpm" id="bpmVal">${m.bpm}</div><button class="sm" data-a="bpm" data-v="1">+1</button><button class="sm" data-a="bpm" data-v="5">+5</button></div>
  <div class="muted small" style="text-align:center">BPM</div>
@@ -778,6 +780,8 @@ document.addEventListener('click',e=>{
    const m=prompt('Hány percet gyakoroltál ma?');if(m===null)return;const mins=num(m);if(!(mins>0&&mins<=1440)){toast('Érvénytelen időtartam.');return;}
    const end=Date.now();S.actLog.push({id:uid(),act:a.id,sub:sb.id,start:end-mins*6e4,end});save();render();toast(hmText(mins*6e4)+' rögzítve.');break;}
   case 'bpm':setBpm(S.metro.bpm+(+v));break;
+  case 'metroRemove':{const a=actById(actOpen);if(M.on)metroStop();a.metro=false;save();render();toast('Metronóm eltávolítva. Az oldal alján visszateheted.');break;}
+  case 'metroAdd':actById(actOpen).metro=true;save();render();break;
   case 'metro':if(M.on)metroStop();else metroStart();render();break;
   case 'tap':{const t=performance.now();M.taps=M.taps.filter(x=>t-x<2500);M.taps.push(t);
    if(M.taps.length>=2){const d=(M.taps[M.taps.length-1]-M.taps[0])/(M.taps.length-1);setBpm(60000/d);}break;}
@@ -857,7 +861,7 @@ document.addEventListener('submit',e=>{
   const n=$('#fn');if(n)n.focus();
  }else if(f==='newAct'){
   const n=$('#actName').value.trim(),g=Math.round(num($('#actGoal').value)||0);if(!n){toast('Adj nevet a tevékenységnek.');return;}
-  const a={id:uid(),name:n,goal:Math.max(0,g),subs:[]};S.acts.push(a);actOpen=a.id;save();render();
+  const a={id:uid(),name:n,goal:Math.max(0,g),subs:[],metro:$('#f_newMetro').value!=='0'};S.acts.push(a);actOpen=a.id;save();render();
  }else if(f==='newSub'){
   const n=$('#subName').value.trim();if(!n){toast('Adj nevet a területnek.');return;}
   actById(actOpen).subs.push({id:uid(),name:n});save();render();
