@@ -1181,18 +1181,18 @@ function avSvgBase(pose){
  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 252" class="pose-${write?'write':'cross'}">${avTorso()}${arms}<g transform="translate(100,80) scale(1.18)"><g class="hd">${avHeadSel({glasses:write})}</g></g></svg>`;
 }
 function avHead2(opts={}){
- const o='#2a1810',sk='#f4c6a5',sh='#e2a283',hr='#b8642f',hr2='#8c4520',hl='#e09a5c',ir='#7f9fb3',gl=opts.glasses;
+ const o='#2a1810',sk='#f4c6a5',sh='#e2a283',hr='#a8733d',hr2='#77502a',hl='#d8ad6c',ir='#7f9fb3',gl=opts.glasses;
  return `<g class="head">
- <path d="M-36,-2 C-44,-26 -34,-50 -12,-56 C6,-62 30,-56 38,-38 C44,-24 42,-10 38,-2 Z" fill="${hr2}" stroke="${o}" stroke-width="1.8"/>
+ <path d="M-35,16 C-41,0 -40,-30 -26,-48 C-12,-64 16,-64 30,-50 C42,-36 42,-4 36,16 C34,8 32,3 31,0 L-31,0 C-32,4 -33,10 -35,16 Z" fill="${hr2}" stroke="${o}" stroke-width="1.8" stroke-linejoin="round"/>
  <path d="M-33,0 C-38,-3 -40,8 -36,14 C-34,18 -31,17 -30,14 Z" fill="${sk}" stroke="${o}" stroke-width="1.8"/>
  <path d="M33,0 C38,-3 40,8 36,14 C34,18 31,17 30,14 Z" fill="${sk}" stroke="${o}" stroke-width="1.8"/>
  <path d="M-31,-16 C-32,-40 32,-40 31,-16 L30,6 C29,20 22,32 12,40 C7,44 -7,44 -12,40 C-22,32 -29,20 -30,6 Z" fill="${sk}" stroke="${o}" stroke-width="1.8" stroke-linejoin="round"/>
  <path d="M-29,4 C-28,18 -22,30 -12,38 C-18,30 -24,20 -26,8 Z" fill="${sh}" opacity=".8"/>
  <path d="M-31,-14 L31,-14 L31,-8 C20,-12 -20,-12 -31,-8 Z" fill="${sh}" opacity=".7"/>
- <path d="M-38,-4 C-44,-22 -36,-42 -22,-48 C-14,-60 6,-62 14,-54 C26,-58 40,-48 40,-32 C44,-22 40,-10 36,-4 C34,-12 30,-16 26,-14 C28,-22 22,-26 16,-22 C14,-28 6,-30 2,-24 C-2,-30 -12,-30 -14,-22 C-20,-26 -28,-22 -26,-14 C-32,-16 -36,-12 -38,-4 Z" fill="${hr}" stroke="${o}" stroke-width="1.8" stroke-linejoin="round"/>
- <path d="M-14,-22 C-12,-16 -8,-13 -4,-14 C-6,-18 -6,-21 -4,-24 M2,-24 C4,-17 10,-15 14,-16 C12,-19 13,-21 16,-22" fill="${hr}" stroke="${o}" stroke-width="1.6" stroke-linejoin="round"/>
- <g fill="none" stroke="${hl}" stroke-width="2" stroke-linecap="round"><path d="M-26,-38 q6,-7 13,-5"/><path d="M-4,-50 q7,-6 14,-2"/><path d="M18,-44 q6,-3 11,2"/><path d="M-30,-24 q3,-5 8,-6"/></g>
- <g fill="none" stroke="${hr2}" stroke-width="1.6" stroke-linecap="round"><path d="M-20,-30 q4,4 9,3"/><path d="M6,-36 q4,4 9,3"/><path d="M26,-28 q2,4 6,5"/><path d="M-32,-12 q2,-4 6,-4"/></g>
+ <path d="M-33,-4 C-38,-22 -33,-42 -20,-51 C-13,-61 0,-65 10,-59 C22,-63 37,-53 38,-38 C41,-27 38,-13 33,-4 C32,-12 30,-19 26,-21 C26,-27 20,-29 16,-26 L11,-19 C9,-27 2,-29 -4,-26 C-6,-20 -11,-16 -17,-15 C-15,-21 -17,-25 -21,-25 C-27,-23 -31,-15 -33,-4 Z" fill="${hr}" stroke="${o}" stroke-width="1.8" stroke-linejoin="round"/>
+ <path d="M-4,-26 C-8,-19 -14,-14 -21,-13 C-17,-17 -15,-21 -15,-25 M11,-19 C13,-15 17,-13 21,-13 C19,-17 19,-22 16,-26" fill="${hr}" stroke="${o}" stroke-width="1.6" stroke-linejoin="round"/>
+ <g fill="none" stroke="${hl}" stroke-width="2.2" stroke-linecap="round"><path d="M-25,-40 q6,-7 13,-5"/><path d="M-3,-51 q8,-6 16,-1"/><path d="M20,-46 q6,-2 10,4"/><path d="M-30,-22 q2,-6 7,-8"/><path d="M4,-34 q4,-3 8,-2"/></g>
+ <g fill="none" stroke="${hr2}" stroke-width="1.6" stroke-linecap="round"><path d="M-20,-31 q5,3 10,1"/><path d="M3,-40 q5,4 11,2"/><path d="M23,-33 q4,4 8,3"/><path d="M-10,-42 q3,3 7,2"/></g>
  <path d="M-25,-8 L-15,-11 L-5,-9 L-6,-6.5 L-15,-8.2 L-24,-5.5 Z" fill="#6a3a1c" stroke="${o}" stroke-width="1" stroke-linejoin="round"/>
  <path d="M25,-8 L15,-11 L5,-9 L6,-6.5 L15,-8.2 L24,-5.5 Z" fill="#6a3a1c" stroke="${o}" stroke-width="1" stroke-linejoin="round"/>
  <g class="eyes">
@@ -1208,14 +1208,13 @@ function avHead2(opts={}){
  ${gl?`<g fill="none" stroke="${o}" stroke-width="1.8"><rect x="-26" y="-7" width="21" height="14" rx="5"/><rect x="5" y="-7" width="21" height="14" rx="5"/><path d="M-5,-2 Q0,-4 5,-2"/></g>`:''}
  <path d="M1,3 L-2.5,15 Q0,17 4,15.5" fill="none" stroke="${o}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
  <path d="M-3,15.5 q-1.5,1 -1,2" fill="none" stroke="${sh}" stroke-width="1.5" stroke-linecap="round"/>
- <path d="M-16,22 Q-8,17.5 0,20 Q8,17.5 16,22 Q14,24.5 9,23.5 Q4,22.5 0,23 Q-4,22.5 -9,23.5 Q-14,24.5 -16,22 Z" fill="#b8763f" stroke="${o}" stroke-width="1.4" stroke-linejoin="round"/>
+ <path d="M-16,22 Q-8,17.5 0,20 Q8,17.5 16,22 Q14,24.5 9,23.5 Q4,22.5 0,23 Q-4,22.5 -9,23.5 Q-14,24.5 -16,22 Z" fill="#b4804a" stroke="${o}" stroke-width="1.4" stroke-linejoin="round"/>
  <g class="m-closed"><path d="M-10,26.5 Q0,34 10,26.5 Q0,30 -10,26.5 Z" fill="#7a2626" stroke="${o}" stroke-width="1.6" stroke-linejoin="round"/><path d="M-8,27.2 Q0,29.6 8,27.2 L7.4,28.6 Q0,30.6 -7.4,28.6 Z" fill="#fff"/></g>
  <g class="m-open" style="display:none"><path d="M-10,26 Q0,25 10,26 Q8,38 0,38 Q-8,38 -10,26 Z" fill="#7a2626" stroke="${o}" stroke-width="1.6" stroke-linejoin="round"/><path d="M-8,26.6 L8,26.6 L7.4,29 Q0,30 -7.4,29 Z" fill="#fff"/><path d="M-5,35 Q0,32 5,35 Q0,37 -5,35 Z" fill="#d0605a"/></g>
  <path d="M-12,32 q2,2 4,1.5 M12,32 q-2,2 -4,1.5" fill="none" stroke="${sh}" stroke-width="1.4" stroke-linecap="round"/>
  <path d="M-4,41 Q0,42.5 4,41" fill="none" stroke="${sh}" stroke-width="1.4" stroke-linecap="round"/>
  </g>`;
 }
-
 function avCouch(){
  const c=AVC;
  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -44 260 296" class="pose-couch">
