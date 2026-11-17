@@ -103,6 +103,17 @@ h2{font-size:20px;margin:0 0 4px}
 .jrow{border-top:1px solid var(--line);padding:10px 0}.jrow:first-child{border-top:0}
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:12px;font-weight:800;font-size:18px;background:var(--card2)}
 textarea{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:80px;resize:vertical}
+.avatar{position:fixed;left:6px;bottom:calc(58px + env(safe-area-inset-bottom));width:80px;height:100px;z-index:35;cursor:pointer;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));animation:avbob 4s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+@keyframes avbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.avatar .eyes{transform-box:fill-box;transform-origin:center;animation:avblink 5s infinite}
+@keyframes avblink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.avatar.talk{animation:avbob 1.2s ease-in-out infinite}
+.avbubble{position:fixed;left:82px;bottom:calc(98px + env(safe-area-inset-bottom));max-width:min(300px,calc(100vw - 98px));z-index:36;background:var(--text);color:var(--bg);border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:15px;line-height:1.35;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.avbubble .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.avbubble button{min-height:34px;padding:4px 12px;font-size:14px;background:rgba(127,127,127,.18);color:inherit}
+.avbubble button.go{background:var(--accent);color:var(--accent-ink)}
+.avbubble .cl{position:absolute;top:2px;right:4px;background:transparent;min-height:28px;padding:0 6px;font-size:18px;opacity:.55}
+body.has-av main{padding-bottom:110px}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -160,7 +171,7 @@ nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stro
 .rate{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:16px 0 10px}
 .rate button{display:flex;flex-direction:column;align-items:center;padding:12px 2px;font-size:24px;font-weight:750}
 .rate button small{font-size:11px;color:var(--muted);font-weight:500;margin-top:3px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));background:var(--text);color:var(--bg);padding:11px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:60;width:max-content;max-width:calc(100vw - 32px);text-align:center}
+.toast{pointer-events:none;position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top));background:var(--text);color:var(--bg);padding:11px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:60;width:max-content;max-width:calc(100vw - 32px);text-align:center}
 .due{color:var(--good)}
 .toggle.on{background:var(--good);color:#04130c}
 .toggle.fast.on{background:var(--warn);color:#1a1200}
@@ -245,7 +256,7 @@ const exById=id=>ALL_EX.find(e=>e.id===id);
 
 /* ---------- state ---------- */
 function fresh(){return {profile:null,days:{},workouts:[],rest:{hours:MIN_REST,log:[]},volume:[0,0,0,0,0],nextDay:0,pressFirst:false,session:null,blocked:[],comp:{},compHandled:{},
- plan:{bed:'22:30',sleepH:8,workStart:'08:00',workEnd:'16:00',workDays:[1,2,3,4,5]},dayPlans:{},sleep:{},journal:{},tasks:[],acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
+ avatar:{on:true,snooze:{}},plan:{bed:'22:30',sleepH:8,workStart:'08:00',workEnd:'16:00',workDays:[1,2,3,4,5]},dayPlans:{},sleep:{},journal:{},tasks:[],acts:[],actLog:[],timer:null,metro:{bpm:80,beats:4},weights:[],debtLog:{},debtFrom:null,scoreTab:'general',bmrAdj:0,bmrLog:[],results:{pullups:[],deadhang:[],dips:[]},prs:{},gyms:[]};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){const f=fresh();const o=Object.assign(f,s);o.results=Object.assign(fresh().results,s.results||{});while(o.volume.length<4)o.volume.push(0);return o;}}catch(e){}return fresh();}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -695,6 +706,8 @@ function viewSettings(){
   <div class="row" style="margin-top:12px"><button class="primary grow" data-a="backup">Mentés fájlba</button>
   <label class="grow" style="display:flex;align-items:center;justify-content:center;background:var(--card2);border-radius:12px;font-weight:600;min-height:44px;cursor:pointer">Visszatöltés<input type="file" accept=".json,application/json" id="restoreIn" hidden></label></div>
   <div class="hint">Mentés után a felugró ablakban válaszd a „Mentés a Fájlokba” lehetőséget.</div></div>
+ <div class="card"><div class="row between"><div><div class="label" style="margin:0">Avatár</div><div class="muted small">Kérdez és emlékeztet a bal alsó sarokban</div></div>
+  <button class="sm ${S.avatar.on?'primary':''}" data-a="avToggle">${S.avatar.on?'Bekapcsolva':'Kikapcsolva'}</button></div></div>
  <button class="ghost block danger" data-a="resetAll">Minden adat törlése</button>`;
 }
 
@@ -1082,7 +1095,56 @@ function viewJournal(){
 }
 function parseRange(t){const m=String(t).match(/(\d{1,2})[:.]?(\d{2})?\s*[-–]\s*(\d{1,2})[:.]?(\d{2})?/);if(!m)return null;let s=+m[1]*60+(+m[2]||0),e=+m[3]*60+(+m[4]||0);if(s<5*60)s+=1440;if(e<=s)e+=1440;return e-s>=5&&e-s<=24*60?[s,e]:null;}
 
+/* ---------- avatár ---------- */
+const AV_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125" width="100%" height="100%"> <defs> <radialGradient id="avsk" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="#f0bf98"/><stop offset="1" stop-color="#d6996f"/></radialGradient> </defs> <path d="M0 125 C1 103 14 92 34 89 L66 89 C86 92 99 103 100 125 Z" fill="url(#avsk)"/><path d="M18 100 Q24 96 30 99" fill="none" stroke="#c4865e" stroke-width="1" opacity=".6"/><path d="M82 100 Q76 96 70 99" fill="none" stroke="#c4865e" stroke-width="1" opacity=".6"/> <path d="M39 72 L61 72 L62 93 Q50 99 38 93 Z" fill="#d89a70"/> <path d="M39 80 Q50 88 61 80 L61 76 Q50 84 39 76 Z" fill="#c4865e" opacity=".6"/> <path d="M21 125 L24 100 C26 93 30 90 34 90 C37 99 43 104 50 104 C57 104 63 99 66 90 C70 90 74 93 76 100 L79 125 Z" fill="#141414"/> <path d="M34 90 C37 99 43 104 50 104 C57 104 63 99 66 90" fill="none" stroke="#2c2c2c" stroke-width="1.6"/> <ellipse cx="26.5" cy="57" rx="4" ry="6" fill="#d89a70"/><ellipse cx="73.5" cy="57" rx="4" ry="6" fill="#d89a70"/> <path d="M26 50 C26 29 74 29 74 50 C74 67 68 79 50 81 C32 79 26 67 26 50 Z" fill="url(#avsk)"/> <path d="M24 50 C20 34 28 18 44 15 C56 11 72 16 77 32 C80 40 78 47 76 50 C74 44 72 41 68 40 C60 38 54 41 47 39 C40 38 33 40 29 44 C27 46 25 48 24 50 Z" fill="#9a7346"/> <g fill="#a98150"> <circle cx="27" cy="42" r="6"/><circle cx="31" cy="32" r="7.5"/><circle cx="40" cy="24" r="8"/><circle cx="51" cy="21" r="8.5"/><circle cx="62" cy="23" r="8"/><circle cx="70" cy="31" r="7.5"/><circle cx="74" cy="41" r="6"/> <circle cx="36" cy="37" r="5.5"/><circle cx="46" cy="35" r="5.5"/><circle cx="56" cy="34" r="5.5"/><circle cx="65" cy="37" r="5"/><circle cx="45" cy="15" r="5.5"/><circle cx="57" cy="14" r="5"/><circle cx="34" cy="20" r="4.5"/><circle cx="67" cy="17" r="4.5"/> </g> <g fill="#cfa86f"> <circle cx="42" cy="21" r="3.6"/><circle cx="53" cy="18" r="3.8"/><circle cx="63" cy="20" r="3.2"/><circle cx="33" cy="29" r="3"/><circle cx="70" cy="28" r="3"/><circle cx="47" cy="32" r="2.6"/><circle cx="58" cy="31" r="2.6"/><circle cx="46" cy="12" r="2.4"/><circle cx="37" cy="35" r="2.2"/><circle cx="66" cy="35" r="2.2"/> </g> <g fill="#e3c48e"><circle cx="52" cy="16" r="1.6"/><circle cx="41" cy="18" r="1.4"/><circle cx="62" cy="17" r="1.4"/><circle cx="31" cy="27" r="1.3"/></g> <g fill="none" stroke="#7c5a32" stroke-width=".9" opacity=".75"> <path d="M28 36 q3 -3 6 0"/><path d="M38 28 q3 -3.5 6 0"/><path d="M49 25 q3 -3.5 6 0"/><path d="M60 27 q3 -3.5 6 0"/><path d="M68 35 q3 -3 6 0"/><path d="M42 39 q2.5 -2.5 5 0"/><path d="M53 38 q2.5 -2.5 5 0"/><path d="M62 40 q2.5 -2.5 5 0"/> </g> <path d="M35.5 45.5 Q41 39.5 46.5 44" fill="none" stroke="#7a5a36" stroke-width="2.4" stroke-linecap="round"/> <path d="M53.5 47.2 Q59 45.6 64.5 47.8" fill="none" stroke="#7a5a36" stroke-width="2.4" stroke-linecap="round"/> <g class="eyes"> <ellipse cx="41" cy="52" rx="4.2" ry="2.8" fill="#fff"/><circle cx="41.6" cy="52.3" r="2" fill="#4f6f7d"/><circle cx="41.6" cy="52.3" r=".95" fill="#111"/><circle cx="42.3" cy="51.6" r=".45" fill="#fff"/> <ellipse cx="59" cy="52.5" rx="4.2" ry="2.5" fill="#fff"/><circle cx="59.6" cy="52.8" r="2" fill="#4f6f7d"/><circle cx="59.6" cy="52.8" r=".95" fill="#111"/><circle cx="60.3" cy="52.1" r=".45" fill="#fff"/> </g> <path d="M36.6 51.4 Q41 48.4 45.4 51.4 L45.4 49 L36.6 49 Z" fill="#e3ab83"/> <path d="M54.6 52 Q59 50.4 63.4 52 L63.4 49.5 L54.6 49.5 Z" fill="#e3ab83"/> <path d="M36.6 51.4 Q41 48.4 45.4 51.4" fill="none" stroke="#7a4b30" stroke-width=".8"/> <path d="M54.6 52 Q59 50.4 63.4 52" fill="none" stroke="#7a4b30" stroke-width=".8"/> <path d="M50.5 54 Q47.5 61.5 49 63.5 Q51 64.6 53.4 63" fill="none" stroke="#b9774f" stroke-width="1.2" stroke-linecap="round"/> <ellipse cx="36" cy="63" rx="4" ry="2.4" fill="#e58f7a" opacity=".25"/><ellipse cx="64" cy="63" rx="4" ry="2.4" fill="#e58f7a" opacity=".25"/> <path d="M40.5 68.4 Q45.5 64.6 50 66.4 Q54.5 64.6 59.5 68.4 Q55 70 50 68.6 Q45 70 40.5 68.4 Z" fill="#8a6640"/> <path class="m-closed" d="M43.5 72.3 Q50 75.6 58 71" fill="none" stroke="#8a3d30" stroke-width="1.6" stroke-linecap="round"/> <g class="m-open" style="display:none"><ellipse cx="50.5" cy="73.4" rx="5" ry="3.8" fill="#5a1d17"/><path d="M46 71.6 Q50.5 70.6 55 71.6 L54.6 72.8 Q50.5 72 46.4 72.8 Z" fill="#fff"/><ellipse cx="50.5" cy="75.6" rx="2.8" ry="1.2" fill="#c0504a"/></g> </svg>`;
+const AV={el:null,bub:null,typing:0,mouth:0,cur:null,lastAuto:0,i:0};
+function verbOf(name){const n=name.trim().toLowerCase();return /(ás|és)$/.test(n)?n.slice(0,-2)+'ni':null;}
+function avMsgs(){
+ const out=[],h=new Date().getHours(),k=dkey(),d=day(),c=S.profile?calc():null,sn=S.avatar.snooze||{},now=Date.now();
+ const add=(key,text,go,goLabel)=>{if(!sn[key]||sn[key]<now)out.push({key,text,go,goLabel});};
+ if(!S.profile)return out;
+ if(!(S.sleep[k]||{}).wake&&h>=4&&h<14)add('wake','Jó reggelt! Felébredtél már? Nyomd meg, és beosztom a napodat.','woke','Felébredtem');
+ const due=dueAt();if(due&&due<=now&&!S.session)add('wo','Ma edzésnap van: '+DAYS[S.nextDay].name+'. Ugye nem hagyod ki?','tab:workout','Edzés');
+ if(h>=16)S.acts.filter(a=>a.goal>0).forEach(a=>{const done=actMs(a.id,null,k)/6e4;if(done<a.goal){const v=verbOf(a.name);
+  add('act'+a.id,v?`Ugye nem felejtettél el ma ${v}? Még ${durTxt(a.goal-done)} van hátra.`:`Ugye nem felejtetted el ma: ${a.name}? Még ${durTxt(a.goal-done)} van hátra.`,'act:'+a.id,'Indulok');}});
+ if(S.profile.creatine&&!d.creatine&&h>=10)add('cr','Bevetted ma a kreatint?','creatine','Igen, bevettem');
+ if(c&&h>=15&&c.water<c.waterT*.5)add('wa',`Ittál ma eleget? Még csak ${dec(c.water/1000)} liternél tartasz.`,'water','+3 dl');
+ if(c&&h>=17&&c.steps<c.stepGoal*.6)add('st',`Még ${fmt(c.stepGoal-c.steps)} lépés hiányzik a mai célhoz. Egy séta?`,'tab:today','Mutasd');
+ const open=S.tasks.filter(t=>taskVisible(t,k)&&!taskDoneOn(t,k)).length;if(open&&h>=13)add('tk',`Van még ${open} nyitott feladatod. Haladunk?`,'tab:work','Munka');
+ if(c&&h>=19){const t=debtState().total;if(t>300)add('db',`A kalóriatartozásod +${fmt(t)} kcal. Kb. ${fmt(Math.ceil(t/c.kps/100)*100)} lépés lenullázza.`,'tab:today','Mutasd');}
+ if(h>=21&&!S.journal[dayOf(now)])add('jr','Hogy telt a nap? Zárjuk le, és értékeld!','summary','Lezárom');
+ return out;
+}
+const AV_TIPS=['Az aranyközépút nem a több, hanem a következetes.','Egy sorozat, abszolút bukásig. A többi csak zaj.','Ma is egy lépéssel jobb, mint tegnap.','Az alvás is edzés. Ne spórolj vele.','Kicsi, de minden nap. Így lesz belőle 450 óra.'];
+function avMount(){
+ if(!AV.el){AV.el=document.createElement('div');AV.el.className='avatar';AV.el.innerHTML=AV_SVG;AV.el.setAttribute('aria-label','Avatár');AV.el.dataset.a='avTap';document.body.appendChild(AV.el);}
+ const on=!!(S.profile&&S.avatar.on);AV.el.hidden=!on;document.body.classList.toggle('has-av',on);if(!on)avHide();
+}
+function avMouth(open){if(!AV.el)return;AV.el.querySelector('.m-open').style.display=open?'':'none';AV.el.querySelector('.m-closed').style.display=open?'none':'';}
+function avSay(m){
+ avHide(true);AV.cur=m;const b=document.createElement('div');b.className='avbubble';
+ b.innerHTML=`<button class="cl" data-a="avClose" aria-label="Bezárás">×</button><div class="tx" style="padding-right:14px"></div>${m.go?`<div class="acts"><button class="go" data-a="avGo">${esc(m.goLabel)}</button><button data-a="avLater">Később</button></div>`:''}`;
+ document.body.appendChild(b);AV.bub=b;AV.el.classList.add('talk');
+ const tx=b.querySelector('.tx');let i=0;clearInterval(AV.typing);clearInterval(AV.mouth);let o=false;
+ AV.mouth=setInterval(()=>{o=!o;avMouth(o);},110);
+ AV.typing=setInterval(()=>{i+=1;tx.textContent=m.text.slice(0,i);if(i>=m.text.length){clearInterval(AV.typing);setTimeout(()=>{clearInterval(AV.mouth);avMouth(false);AV.el.classList.remove('talk');},220);}},28);
+ if(m.key){S.avatar.snooze[m.key]=Date.now()+90*6e4;save();}
+}
+function avHide(keep){clearInterval(AV.typing);clearInterval(AV.mouth);avMouth(false);if(AV.el)AV.el.classList.remove('talk');if(AV.bub){AV.bub.remove();AV.bub=null;}if(!keep)AV.cur=null;}
+function avNext(){const ms=avMsgs();if(ms.length){avSay(ms[0]);return;}avSay({text:AV_TIPS[AV.i++%AV_TIPS.length]});}
+function avAuto(){if(!S.profile||!S.avatar.on||$('#sheet')||AV.bub)return;if(Date.now()-AV.lastAuto<3*6e4)return;const ms=avMsgs();if(!ms.length)return;AV.lastAuto=Date.now();avSay(ms[0]);}
+function avGo(){
+ const m=AV.cur;avHide();if(!m||!m.go)return;const g=m.go;
+ if(g==='woke'){document.querySelector('[data-a=woke]')?document.querySelector('[data-a=woke]').click():(sleepRec(dkey()).wake=Date.now(),save(),render());return;}
+ if(g==='creatine'){day().creatine=true;save();render();toast('Kreatin pipálva.');return;}
+ if(g==='water'){day().water.push({id:uid(),ml:300});save();render();toast('+3 dl víz.');return;}
+ if(g==='summary'){tab='plan';planView='summary';sumDay=dayOf(Date.now());sumRating=null;render();window.scrollTo(0,0);return;}
+ if(g.startsWith('act:')){tab='acts';actOpen=g.slice(4);render();window.scrollTo(0,0);return;}
+ if(g.startsWith('tab:')){tab=g.slice(4);if(tab==='plan')planView='day';render();window.scrollTo(0,0);}
+}
+
 function render(){
+ avMount();
  const app=$('#app'),nav=$('#nav');
  if(!S.profile){app.innerHTML=profileForm(true);nav.hidden=true;return;}
  nav.hidden=false;
@@ -1120,6 +1182,11 @@ document.addEventListener('click',e=>{
  const a=b.dataset.a,v=b.dataset.v,d=day();
  switch(a){
   case 'tab':tab=v;if(v==='plan')planView='day';if(v!=='acts'){if(M.on)metroStop();tunerStop();}render();window.scrollTo(0,0);break;
+  case 'avTap':if(AV.bub){avHide();}else avNext();break;
+  case 'avClose':avHide();break;
+  case 'avLater':{const m=AV.cur;if(m&&m.key){S.avatar.snooze[m.key]=Date.now()+3*36e5;save();}avHide();break;}
+  case 'avGo':avGo();break;
+  case 'avToggle':S.avatar.on=!S.avatar.on;save();render();break;
   case 'woke':{const k=dkey();sleepRec(k).wake=Date.now();save();const ln=lastNight(k);render();toast(ln?'Jó reggelt! '+durTxt(ln.ms/6e4)+' alvás. A napirend ehhez igazodott.':'Jó reggelt! A napirend az ébredésedhez igazodott.');break;}
   case 'slept':{const k=dayOf(Date.now());sleepRec(k).bed=Date.now();save();tab='plan';planView='summary';sumDay=k;sumRating=S.journal[k]?S.journal[k].rating:null;render();window.scrollTo(0,0);break;}
   case 'openSummary':planView='summary';sumDay=dayOf(Date.now());sumRating=S.journal[sumDay]?S.journal[sumDay].rating:null;render();window.scrollTo(0,0);break;
@@ -1308,8 +1375,9 @@ document.addEventListener('change',e=>{if(e.target.id==='gymIn'&&S.session)rende
 document.addEventListener('change',e=>{const t=e.target;if(t.id==='restoreIn'&&t.files&&t.files[0]){restore(t.files[0]);t.value='';return;}if(!t.dataset||!t.dataset.file)return;const f=t.files&&t.files[0];if(!f)return;
  if(f.size>300*1048576&&!confirm('Ez a fájl '+Math.round(f.size/1048576)+' MB. A nagy videók gyorsan betöltik a telefon tárhelyét. Így is csatolod?'))return;
  attachBlob(t.dataset.file,f,f.name);});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){tunerStop();return;}S=load();render();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){tunerStop();return;}S=load();render();setTimeout(avAuto,1200);});
 render();
+setTimeout(avAuto,1800);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
