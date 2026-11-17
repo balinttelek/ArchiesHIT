@@ -103,7 +103,7 @@ h2{font-size:20px;margin:0 0 4px}
 .jrow{border-top:1px solid var(--line);padding:10px 0}.jrow:first-child{border-top:0}
 .badge{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:12px;font-weight:800;font-size:18px;background:var(--card2)}
 textarea{font:inherit;color:var(--text);background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:80px;resize:vertical}
-.avatar{position:fixed;left:6px;bottom:calc(58px + env(safe-area-inset-bottom));width:80px;height:100px;z-index:35;cursor:pointer;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));animation:avbob 4s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.avatar{position:fixed;left:4px;bottom:calc(58px + env(safe-area-inset-bottom));width:84px;height:106px;z-index:35;cursor:pointer;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45));animation:avbob 4s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
 @keyframes avbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .avatar .eyes{transform-box:fill-box;transform-origin:center;animation:avblink 5s infinite}
 @keyframes avblink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
@@ -114,6 +114,33 @@ textarea{font:inherit;color:var(--text);background:var(--card2);border:1px solid
 .avbubble button.go{background:var(--accent);color:var(--accent-ink)}
 .avbubble .cl{position:absolute;top:2px;right:4px;background:transparent;min-height:28px;padding:0 6px;font-size:18px;opacity:.55}
 body.has-av main{padding-bottom:110px}
+.avatar svg,.sav svg{width:100%;height:100%;overflow:visible}
+.pose-write .hd{transform-box:fill-box;transform-origin:50% 95%;animation:wlook 5.5s ease-in-out infinite}
+@keyframes wlook{0%,62%,100%{transform:rotate(7deg) translateY(2px)}68%,86%{transform:rotate(0) translateY(0)}}
+.pose-write .pupils{animation:wpup 5.5s ease-in-out infinite}
+@keyframes wpup{0%,62%,100%{transform:translate(-2px,3px)}68%,86%{transform:translate(0,0)}}
+.pose-write .pen{animation:wpen .55s linear infinite}
+@keyframes wpen{0%{transform:translate(0,0)}33%{transform:translate(-3px,1px)}66%{transform:translate(2px,-1px)}100%{transform:translate(0,0)}}
+.pose-couch .hd{transform-box:fill-box;transform-origin:50% 95%;animation:ctilt 6s ease-in-out infinite}
+@keyframes ctilt{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.stage{--bg:#0f1115;--card:#181b21;--card2:#22262e;--line:#2a2f39;--text:#f2f3f5;--muted:#9aa0aa;--accent:#ff7a1a;--accent-ink:#1a0d02;--good:#3ecf8e;--warn:#ffb020;--bad:#ff5a5f;
+ position:fixed;inset:0;z-index:80;color:var(--text);background:radial-gradient(120% 70% at 50% 25%,#2b2416 0,#0f1115 70%);overflow-y:auto;-webkit-overflow-scrolling:touch;animation:stIn .35s ease}
+@keyframes stIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
+.stage .in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:calc(18px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+.stage .sbub{position:relative;background:#f2f3f5;color:#14161a;border-radius:18px;padding:14px 16px;font-size:16.5px;line-height:1.42;font-weight:600;width:100%;min-height:56px;margin-bottom:16px;white-space:pre-line}
+.stage .sbub:after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-9px;border:9px solid transparent;border-bottom:0;border-top-color:#f2f3f5}
+.stage .sav{width:min(200px,46vw);aspect-ratio:200/252;flex:none;animation:avbob 4s ease-in-out infinite;filter:drop-shadow(0 10px 22px rgba(0,0,0,.5))}
+.stage .sav.sm{width:min(120px,30vw)}
+.stage .sav.couch{width:min(300px,76vw);aspect-ratio:260/296}
+.stage .sbody{width:100%;margin-top:16px;display:grid;gap:10px}
+.stage .card{margin:0}
+.stage .skip{background:transparent;color:var(--muted);font-weight:600;min-height:36px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:38px;padding:6px 14px;border-radius:99px;font-size:15px;border:1px solid var(--line)}
+.chips button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.hrow{display:grid;grid-template-columns:1fr 92px auto;gap:8px;align-items:center;padding:6px 0}
+.profbtn{display:flex;align-items:center;gap:10px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:12px;min-height:54px;text-align:left}
+.profbtn .pic{width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:800}
 .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
 .stat{background:var(--card2);border-radius:12px;padding:10px 12px}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
@@ -152,8 +179,9 @@ input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .inline{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:40}
 nav .in{display:flex;gap:0;max-width:560px;width:100%}
-nav button{flex:1;min-width:0;background:transparent;color:var(--muted);font-size:9.5px;letter-spacing:-.1px;padding:4px 0;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button{flex:1;min-width:0;background:transparent;color:var(--muted);font-size:10.5px;padding:4px 0;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px}
 nav button.on{color:var(--accent)}
+nav button[hidden]{display:none}
 nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--muted);margin-left:4px;vertical-align:2px;white-space:nowrap}
 .tag.post{color:var(--warn)}.tag.added{color:var(--accent)}.tag.pre{color:var(--good)}
@@ -183,11 +211,10 @@ code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:13px;wo
 <main id="app"></main>
 <nav id="nav" hidden><div class="in">
 <button data-a="tab" data-v="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Ma</button>
-<button data-a="tab" data-v="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h7"/></svg>Napirend</button>
-<button data-a="tab" data-v="workout"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Edzés</button>
 <button data-a="tab" data-v="work"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>Munka</button>
+<button data-a="tab" data-v="workout"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Edzés</button>
 <button data-a="tab" data-v="acts"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>Tevékenység</button>
-<button data-a="tab" data-v="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profil</button>
+<button data-a="tab" data-v="plan"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h7"/></svg>Napirend</button>
 </div></nav>
 <script>
 "use strict";
@@ -321,7 +348,8 @@ function dueBefore(limit){
 }
 function dueAt(){const r=dueBefore(Infinity);if(r)return r.due;return isBlocked(dkey())?shiftBlocked(Date.now(),false):null;}
 /* Kihagyás csak akkor ront, ha egy hétnél tovább marad el az esedékes edzés (és az adott nap nem bejelentett kihagyás). */
-function missed(k){const start=kdate(k).getTime(),r=dueBefore(start+864e5);if(!r)return false;return !isBlocked(k)&&start-r.due>GRACE_DAYS*864e5;}
+function trains(){return !!(S.profile&&S.profile.trains!==false);}
+function missed(k){if(!trains())return false;const start=kdate(k).getTime(),r=dueBefore(start+864e5);if(!r)return false;return !isBlocked(k)&&start-r.due>GRACE_DAYS*864e5;}
 
 /* ---------- adherence ---------- */
 function fastCount(k){let n=0;for(let i=0;i<FAST_WINDOW;i++){const d=S.days[addDays(k,-i)];if(d&&d.fast)n++;}return n;}
@@ -374,7 +402,7 @@ function allScores(){
   ks.forEach(k=>{const p=score(k,true).parts;Object.keys(sum).forEach(x=>sum[x]+=p[x]);});
   Object.keys(sum).forEach(x=>sum[x]/=ks.length);
   sum.strength=out.strength.v;out.parts=sum;
-  const use=Object.keys(W).filter(x=>sum[x]!=null&&(x!=='creatine'||S.profile.creatine));
+  const use=Object.keys(W).filter(x=>sum[x]!=null&&(x!=='creatine'||S.profile.creatine)&&(trains()||(x!=='workout'&&x!=='strength')));
   const wsum=use.reduce((a,x)=>a+W[x],0);
   out.general=use.reduce((a,x)=>a+W[x]*sum[x],0)/wsum;
  }
@@ -492,6 +520,7 @@ function profileForm(first){
  return `${first?`<h1>Golden Mean</h1><div class="sub">Add meg az adataidat. Ebből számolom az alapanyagcserét (Mifflin-St Jeor) és a napi célokat.</div>`:''}
  <div class="card">${first?'':'<div class="label">Profil</div>'}
  <div class="grid2" style="margin-top:0">
+  <label class="field" style="grid-column:1/-1"><span>Neved</span><input id="f_name" autocomplete="given-name" value="${esc(P.name??'')}"></label>
   <label class="field"><span>Életkor (év)</span><input id="f_age" inputmode="numeric" value="${P.age??''}"></label>
   <div class="field"><span>Nem</span>${seg('sex',[['m','Férfi'],['f','Nő']],P.sex||'m')}</div>
   <label class="field"><span>Testsúly (kg)</span><input id="f_weight" inputmode="decimal" value="${P.weight??''}"></label>
@@ -501,6 +530,7 @@ function profileForm(first){
  </div>
  <label class="field"><span>Céltestsúly (kg)</span><input id="f_gw" inputmode="decimal" placeholder="${T&&T.bfGoalW?'Testzsírból: '+dec(T.bfGoalW)+' kg':'nem kötelező, testzsírból is számolható'}" value="${P.goalWeight??''}"></label>
  <div class="field"><span>Szedsz kreatint?</span>${seg('creatine',[['1','Igen'],['0','Nem']],P.creatine?'1':'0')}</div>
+ <div class="field"><span>Edzel?</span>${seg('trains',[['1','Edzek'],['0','Nem edzek']],P.trains===false?'0':'1')}</div>
  <div class="field"><span>Cél</span>${seg('goal',[['cut','Fogyás'],['maintain','Szinten tartás'],['gain','Tömegnövelés']],P.goal||'maintain')}</div>
  <div class="field"><span>Napi lépéscél: <b id="sgv">${fmt(sg)}</b></span><input type="range" id="f_sg" min="10000" max="16000" step="500" value="${sg}">
   <div class="hint">Minél magasabb, annál gyorsabb a fogyás. A kalóriacélt fogyásnál nem változtatja.</div></div>
@@ -526,19 +556,19 @@ function workoutCard(withBtn=true){
 function adherenceCard(){
  const a=allScores(),sel=S.scoreTab||'general';
  const pc=v=>v==null?'–':Math.round(v*100)+'%',cl=v=>v==null?'':'c-'+pctCls(v);
- const tabs=[['loss','Fogyás',a.loss],['bb','Bodybuilding',a.strength.v],['general','Általános',a.general]];
+ const tabs=[['loss','Fogyás',a.loss],...(trains()?[['bb','Bodybuilding',a.strength.v]]:[]),['general','Általános',a.general]];
  let detail='';
  if(sel==='loss')detail=a.loss==null?'Az első lezárt naplózott nap után jelenik meg.':`Csak a bevitt és az elégetett kalória számít: ha a napi kalóriatartozásod 0 vagy kevesebb, a nap 100%. Ezer kcal tartozásnál 0%. ${a.n} nap alapján.`;
  else if(sel==='bb'){const st=a.strength;detail=st.n?`Elvárás alkalmanként +1 ismétlés (időzítettnél +5 mp). ${st.n} összevetésből: <b class="c-good">${st.up} fejlődés</b>, <b class="c-warn">${st.same} szinten</b>, <b class="c-bad">${st.down} visszaesés</b>.`:'Egy gyakorlat második naplózott alkalma után jelenik meg.';}
  else if(a.parts){const p=x=>a.parts[x]==null?'–':Math.round(a.parts[x]*100)+'%';
   detail=`<div class="grid5" style="margin-top:0">
   <div class="chip"><b>${p('kcal')}</b><span>kalória</span></div><div class="chip"><b>${p('prot')}</b><span>fehérje</span></div>
-  <div class="chip"><b>${p('steps')}</b><span>lépés</span></div><div class="chip"><b>${p('water')}</b><span>víz</span></div><div class="chip"><b>${p('workout')}</b><span>edzés</span></div></div>
-  <div class="grid5"><div class="chip"><b>${p('strength')}</b><span>erő</span></div>${S.profile.creatine?`<div class="chip"><b>${p('creatine')}</b><span>kreatin</span></div>`:''}</div>
+  <div class="chip"><b>${p('steps')}</b><span>lépés</span></div><div class="chip"><b>${p('water')}</b><span>víz</span></div>${trains()?`<div class="chip"><b>${p('workout')}</b><span>edzés</span></div>`:''}${S.profile.creatine?`<div class="chip"><b>${p('creatine')}</b><span>kreatin</span></div>`:''}</div>
+  ${trains()?`<div class="grid5"><div class="chip"><b>${p('strength')}</b><span>erő</span></div></div>`:''}
   <div class="hint">${a.n} nap alapján, minden szempont együtt.</div>`;}
  else detail='Az első lezárt naplózott nap után jelenik meg.';
  return `<div class="card"><div class="label">Célteljesítés · összesített</div>
- <div class="grid3">${tabs.map(([k,n,v])=>`<button class="${k===sel?'on':''}" data-a="scoreTab" data-v="${k}"><b class="${cl(v)}">${pc(v)}</b><span>${n}</span></button>`).join('')}</div>
+ <div class="grid3" style="grid-template-columns:repeat(${tabs.length},1fr)">${tabs.map(([k,n,v])=>`<button class="${k===sel?'on':''}" data-a="scoreTab" data-v="${k}"><b class="${cl(v)}">${pc(v)}</b><span>${n}</span></button>`).join('')}</div>
  <div class="small" style="margin-top:12px">${detail}</div></div>`;
 }
 function stepsTxt(n){return fmt(Math.ceil(n/100)*100)+' lépés';}
@@ -570,7 +600,8 @@ function goalLine(c){
 function viewToday(){
  const k=dkey(),c=calc(),d=day(),rem=c.kcalT-c.eaten;
  const rec=d.recovery!=null?`${d.recovery}/5 · ${LABELS[d.recovery-1]}`:`<button class="sm" data-a="askRecovery">Megadás</button>`;
- return `<h1>Ma</h1><div class="sub">${dateLong(k)}</div>
+ return `<button class="profbtn" data-a="tab" data-v="settings"><span class="pic">${esc((S.profile.name||'?').trim().charAt(0).toUpperCase()||'?')}</span><div class="grow"><b>Profilom</b><div class="muted small">${esc(S.profile.name||'Adataid, céljaid, beállítások')}</div></div><span class="muted">›</span></button>
+ <h1>Ma</h1><div class="sub">${dateLong(k)}</div>
  ${sunBanner()}
  ${adherenceCard()}
  ${debtCard()}
@@ -584,7 +615,7 @@ function viewToday(){
  <div class="card"><div class="row between"><div class="label" style="margin:0">Lépések</div><div class="muted small">${d.stepsAt?'frissítve '+hm(d.stepsAt):''}</div></div>
   <div class="mid" style="margin-top:4px">${fmt(c.steps)}<span class="muted small"> / ${fmt(c.stepGoalDay)}</span></div>
   ${bar(c.steps,c.stepGoalDay,true)}
-  <form class="inline" data-form="steps" style="grid-template-columns:1fr auto auto"><input id="stepsIn" inputmode="numeric" placeholder="Lépésszám"><button class="sm" type="submit">Mentés</button><button class="sm" type="button" data-a="pasteSteps">Beillesztés</button></form></div>
+  <form class="inline" data-form="steps"><input id="stepsIn" inputmode="numeric" placeholder="Mai lépésszám"><button class="sm" type="submit">Mentés</button></form></div>
  <div class="grid2" style="margin:0 0 12px">
   <div class="card" style="margin:0"><div class="label">Fehérje</div><div class="mid">${fmt(c.prot)}<span class="muted small"> / ${fmt(c.protT)} g</span></div>${bar(c.prot,c.protT,true)}</div>
   <div class="card" style="margin:0"><div class="label">Víz</div><div class="mid">${dec(c.water/1000)}<span class="muted small"> / ${dec(c.waterT/1000)} l</span></div>${bar(c.water,c.waterT,true)}</div>
@@ -594,8 +625,8 @@ function viewToday(){
  <div class="card"><div class="row wrap" style="gap:8px">
   <button class="sm" data-a="water" data-v="200">+2 dl</button><button class="sm" data-a="water" data-v="300">+3 dl</button><button class="sm" data-a="water" data-v="500">+5 dl</button>
   <button class="sm" data-a="waterCustom">Egyéni</button>${d.water.length?'<button class="sm ghost" data-a="waterUndo">Visszavon</button>':''}</div></div>
- ${workoutCard()}
- <div class="card"><div class="row between"><div class="label" style="margin:0">Mai regeneráció</div><div>${rec}</div></div></div>
+ ${trains()?workoutCard():''}
+ ${trains()?`<div class="card"><div class="row between"><div class="label" style="margin:0">Mai regeneráció</div><div>${rec}</div></div></div>`:''}
  <div class="card"><div class="label">Étkezés napló</div>
   <form class="foodform" data-form="food">
    <input id="fn" placeholder="pl. banán" autocomplete="off" enterkeyhint="next">
@@ -605,7 +636,8 @@ function viewToday(){
   </form>
   ${d.food.length?`<ul class="list" style="margin-top:10px">${d.food.slice().reverse().map(f=>`<li><div class="grow">${esc(f.name)} <span class="muted">${fmt(f.kcal)} kcal${f.protein?' · '+String(f.protein).replace('.',',')+' g fehérje':''}</span></div><button class="x" data-a="delFood" data-v="${f.id}" aria-label="Törlés">×</button></li>`).join('')}</ul>`:'<div class="muted small" style="margin-top:10px">Még nincs bejegyzés ma.</div>'}
  </div>
- ${fastCard(k)}`;
+ ${fastCard(k)}
+ <div class="card"><div class="label">Jegyzet</div><textarea id="dayNote" placeholder="Írj ide valamit, nem kell hogy számítson!">${esc(d.note||'')}</textarea><div class="hint">Árcsi figyel. Ami itt van, bekerül a nap összesítésébe.</div></div>`;
 }
 function fastCard(k){
  const on=!!day(k).fast,n=fastCount(k),valid=fastValid(k),left=Math.max(0,FAST_MAX-n+(on?0:0));
@@ -680,27 +712,16 @@ function viewResults(){
 
 function viewSettings(){
  const url=location.origin+location.pathname,T=targets(),log=S.rest.log.slice(-8).reverse();
- return `<h1>Profil</h1><div class="sub">Adatok, célok, edzéslogika és a lépésszám beállítása</div>
+ return `<button class="back" data-a="tab" data-v="today">‹ Ma</button><h1>Profilom</h1><div class="sub">Adatok, célok és beállítások</div>
  <div class="card"><div class="label">Ajánlott napi célok</div>
   <div class="small">Kalória: <b>${fmt(T.rec)} kcal</b>${S.profile.kcalOverride?` (most kézzel: ${fmt(T.kcalT)})`:''}<br>Fehérje: <b>${fmt(T.protT)} g</b> (${dec(GOALS[S.profile.goal].p)} g/kg)<br>Víz: <b>${dec(T.waterRec/1000)} l</b>${S.profile.waterTarget?` (most kézzel: ${dec(T.waterT/1000)} l)`:''}<br>Lépés: <b>${fmt(T.stepGoal)}</b><br>Becsült BMR: <b>${fmt(T.bmr)} kcal</b>${S.bmrAdj?` (benne ${(S.bmrAdj>0?'+':'')+S.bmrAdj} kcal korrekció)`:''}</div></div>
  ${profileForm(false)}
- <div class="card"><div class="label">Edzéslogika</div>
+ ${trains()?`<div class="card"><div class="label">Edzéslogika</div>
   <div class="small">Pihenő: <b>${S.rest.hours} óra</b> (min. 48, max. 168)</div>
   <div class="small" style="margin-top:4px">Volumen: ${DAYS.map((D,i)=>`${i+1}. nap ${S.volume[i]?'−'+S.volume[i]:'teljes'}`).join(' · ')}</div>
   ${log.length?`<ul class="list small" style="margin-top:10px">${log.map(l=>`<li><div class="grow">${esc(l.text)}<div class="muted">${when(l.at)}</div></div></li>`).join('')}</ul>`:''}
-  <div class="row" style="margin-top:12px"><button class="sm ghost" data-a="resetRest">Pihenő vissza 48 órára</button><button class="sm ghost" data-a="resetVolume">Teljes volumen</button></div></div>
- <div class="card"><div class="label">Lépésszám az Egészség appból</div>
-  <div class="small">A webapp nem fér hozzá közvetlenül az Egészség apphoz, ezért egy Parancs viszi át a lépéseket.</div>
-  <ol class="howto small">
-   <li>Parancsok app → <b>+</b> új parancs, neve: <b>Lépések</b>.</li>
-   <li><b>Egészségügyi minták keresése</b> (Find Health Samples): Típus = Lépések, Kezdő dátum = Ma. Ha van Apple Watchod, adj hozzá szűrőt: Forrás = az iPhone-od, különben duplán számol.</li>
-   <li><b>Statisztika kiszámítása</b> (Calculate Statistics): Összeg.</li>
-   <li><b>Szám kerekítése</b> (Round Number).</li>
-   <li><b>Másolás a vágólapra</b> (Copy to Clipboard).</li>
-   <li>Tedd ki widgetként vagy állítsd be a Hátsó koppintásra (Beállítások → Kisegítő lehetőségek → Érintés).</li>
-  </ol>
-  <div class="small">Futtasd a Parancsot, nyisd meg az appot, és a Lépések kártyán nyomd meg a <b>Beillesztés</b> gombot.</div>
-  <div class="hint">Alternatíva Safarihoz: az utolsó lépés helyett <b>URL-ek megnyitása</b> ezzel: <code>${esc(url)}?steps=</code> + Kerekített szám. Ez a Safariba ír, nem a telepített appba, a kettő adatai külön tárolódnak.</div></div>
+  <div class="row" style="margin-top:12px"><button class="sm ghost" data-a="resetRest">Pihenő vissza 48 órára</button><button class="sm ghost" data-a="resetVolume">Teljes volumen</button></div></div>`:''}
+ <button class="ghost block" style="margin-bottom:12px" data-a="obRestart">Bemutató újraindítása Árcsival</button>
  <div class="card"><div class="label">Mentés és visszatöltés</div>
   <div class="small">Egy fájlba menti minden adatodat, a trófeák csatolmányaival együtt. Ezzel tudod az appot törölni és újra hozzáadni (pl. az új ikonért), vagy másik telefonra átvinni.</div>
   <div class="row" style="margin-top:12px"><button class="primary grow" data-a="backup">Mentés fájlba</button>
@@ -972,7 +993,7 @@ async function restore(f){
  if(!d||d.app!=='golden-mean'||!d.state||!d.state.profile){toast('Ez nem Golden Mean mentés.');return;}
  if(!confirm('A visszatöltés felülírja a jelenlegi adatokat ezen az eszközön. Folytatod?'))return;
  let n=0;for(const [id,url] of Object.entries(d.media||{})){try{const blob=await (await fetch(url)).blob();await putBlob(id,blob);n++;}catch(e){}}
- S=Object.assign(fresh(),d.state);S.session=null;save();S=load();render();toast('Visszatöltve'+(n?', '+n+' csatolmánnyal':'')+'.');
+ S=Object.assign(fresh(),d.state);S.session=null;save();S=load();if(STG.el){STG.el.remove();STG.el=null;document.body.style.overflow='';}OB=null;render();toast('Visszatöltve'+(n?', '+n+' csatolmánnyal':'')+'.');
 }
 
 /* ---------- Golden Mean napirend ---------- */
@@ -999,7 +1020,7 @@ function genPlan(k){
  if(work&&we>ws){ws=Math.max(ws,wake+45);we=Math.min(we,bed-60);if(we>ws){add(ws,we,'work','Munka');add(we,we+30,'rest','Átállás, pihenő');}}
  if(!work)place(30,12*60+30,'meal','Ebéd');
  place(30,Math.max(18*60+30,work?we+30:0),'meal','Vacsora');
- if(workoutDueOn(k)){const i=S.nextDay;place(75,work?we+30:9*60+30,'workout','Edzés · '+DAYS[i].name);}
+ if(trains()&&workoutDueOn(k)){const i=S.nextDay;place(75,work?we+30:9*60+30,'workout','Edzés · '+DAYS[i].name);}
  const acts=S.acts.filter(a=>a.goal>0).map(a=>({a,left:a.goal}));let missing=0;
  let from=work&&we>ws?we:wake+45,guard=0;
  while(acts.some(x=>x.left>0)&&guard++<60){
@@ -1020,7 +1041,7 @@ function freezePlan(k){if(!S.dayPlans[k]||!S.dayPlans[k].edited){const g=genPlan
 function nowMin(){const d=new Date();return d.getHours()*60+d.getMinutes()+(d.getHours()<5?1440:0);}
 function sunBanner(){
  const k=dkey(),h=new Date().getHours(),r=S.sleep[k]||{},bk=dayOf(Date.now()),rb=S.sleep[bk]||{};
- if(!r.wake&&h>=4&&h<15)return `<div class="card sunbar"><div class="grow"><b>Jó reggelt!</b><span class="muted small">Rögzítsd az ébredést, ehhez igazodik a mai napirend.</span></div><button class="primary" data-a="woke">Felébredtem</button></div>`;
+ if(false)return `<div class="card sunbar"><div class="grow"><b>Jó reggelt!</b><span class="muted small">Rögzítsd az ébredést, ehhez igazodik a mai napirend.</span></div><button class="primary" data-a="woke">Felébredtem</button></div>`;
  if(!rb.bed&&(h>=20||h<5))return `<div class="card sunbar"><div class="grow"><b>Ideje lefeküdni?</b><span class="muted small">Lefekvéskor lezárod és értékeled a napot.</span></div><button class="primary" data-a="slept">Lefeküdtem</button></div>`;
  return '';
 }
@@ -1059,7 +1080,7 @@ function daySummary(k){
  const acts=S.acts.map(a=>({name:a.name,min:Math.round(actMs(a.id,null,k)/6e4),goal:a.goal||0})).filter(x=>x.min||x.goal);
  const tasksDone=S.tasks.filter(t=>t.done&&t.doneDay===k).map(t=>t.title),tasksOpen=S.tasks.filter(t=>taskVisible(t,k)&&!taskDoneOn(t,k)).length;
  const wo=S.workouts.filter(w=>dkey(new Date(w.at))===k).map(w=>({name:isCal(w)?'Calisthenics':DAYS[w.day].name,rating:w.rating}));
- return {sleep:ln?{bed:ln.bed,wake:ln.wake,min:Math.round(ln.ms/6e4)}:null,acts,tasksDone,tasksOpen,workouts:wo,
+ return {sleep:ln?{bed:ln.bed,wake:ln.wake,min:Math.round(ln.ms/6e4)}:null,acts,tasksDone,tasksOpen,workouts:wo,trains:trains(),evening:((S.days[k]||{}).evening||[]).map(e=>e.text),note:((S.days[k]||{}).note||''),
   kcal:Math.round(c.eaten),kcalT:Math.round(c.kcalT),steps:c.steps,stepGoal:c.stepGoal,debt:Math.round(dayDebt(k)),fast:!!(S.days[k]||{}).fast};
 }
 function summaryHtml(x){
@@ -1067,7 +1088,8 @@ function summaryHtml(x){
   <li><div class="grow">Alvás</div><div>${x.sleep?`${hm(x.sleep.bed)} → ${hm(x.sleep.wake)} · <b>${durTxt(x.sleep.min)}</b>`:'nincs rögzítve'}</div></li>
   ${x.acts.map(a=>`<li><div class="grow">${esc(a.name)}</div><div><b class="${a.goal&&a.min>=a.goal?'c-good':''}">${durTxt(a.min)}</b>${a.goal?' / '+durTxt(a.goal):''}</div></li>`).join('')}
   <li><div class="grow">Munka</div><div>${x.tasksDone.length} feladat kész${x.tasksOpen?`, ${x.tasksOpen} nyitott`:''}</div></li>
-  <li><div class="grow">Edzés</div><div>${x.workouts.length?x.workouts.map(w=>esc(w.name)+' · '+w.rating+'/10').join(', '):'pihenőnap'}</div></li>
+  ${x.trains!==false||x.workouts.length?`<li><div class="grow">Edzés</div><div>${x.workouts.length?x.workouts.map(w=>esc(w.name)+' · '+w.rating+'/10').join(', '):'pihenőnap'}</div></li>`:''}
+  ${x.evening&&x.evening.length?`<li><div class="grow">Munka után</div><div style="text-align:right">${x.evening.map(esc).join(', ')}</div></li>`:''}
   <li><div class="grow">Kalória</div><div>${x.fast?'böjtnap':fmt(x.kcal)+' / '+fmt(x.kcalT)+' kcal'}</div></li>
   <li><div class="grow">Lépés</div><div>${fmt(x.steps)} / ${fmt(x.stepGoal)}</div></li>
   <li><div class="grow">Kalóriatartozás</div><div class="${x.debt>0?'c-bad':'c-good'}">${x.debt>0?'+':''}${fmt(x.debt)} kcal</div></li></ul>
@@ -1075,36 +1097,122 @@ function summaryHtml(x){
 }
 function viewSummary(){
  const k=sumDay||dayOf(Date.now()),x=daySummary(k),j=S.journal[k];
- if(sumRating==null&&j)sumRating=j.rating;
+ if(sumRating==null&&j&&j.rating)sumRating=j.rating;
  return `<button class="back" data-a="planBack">‹ Napirend</button><h1>A nap összegzése</h1><div class="sub">${dateLong(k)}</div>
  <div class="card">${summaryHtml(x)}</div>
  <div class="card"><div class="label">Milyen volt a nap? (1-10)</div>
   <div class="rate10">${Array.from({length:10},(_,i)=>`<button data-a="sumRate" data-v="${i+1}" class="${sumRating===i+1?'on':''}">${i+1}</button>`).join('')}</div>
-  <textarea id="sumNote" placeholder="Jegyzet a napról (nem kötelező)">${esc(j?j.note||'':'')}</textarea>
+  ${(S.days[k]||{}).note?`<div class="small" style="white-space:pre-wrap;margin-bottom:6px"><span class="muted">Jegyzet:</span> ${esc(S.days[k].note)}</div>`:'<div class="hint">A jegyzetet a Ma fül alján írhatod.</div>'}
   <button class="primary block" style="margin-top:10px" data-a="sumSave">${j?'Frissítés':'Nap mentése'}</button></div>`;
 }
 function viewJournal(){
  const ks=Object.keys(S.journal).sort().reverse();
- const avg=ks.length?ks.reduce((a,k)=>a+S.journal[k].rating,0)/ks.length:null;
- return `<button class="back" data-a="planBack">‹ Napirend</button><h1>Mentett napok</h1><div class="sub">${ks.length?`${ks.length} nap · átlag ${dec(avg)}/10`:'Még nincs mentett nap.'}</div>
+ const rated=ks.filter(k=>S.journal[k].rating),avg=rated.length?rated.reduce((a,k)=>a+S.journal[k].rating,0)/rated.length:null;
+ return `<button class="back" data-a="planBack">‹ Napirend</button><h1>Mentett napok</h1><div class="sub">${ks.length?`${ks.length} nap${avg!=null?' · átlag '+dec(avg)+'/10':''}`:'Még nincs mentett nap.'}</div>
  ${ks.length?`<div class="card">${ks.map(k=>{const j=S.journal[k],x=j.snap,op=jOpen===k,am=x.acts.reduce((a,b)=>a+b.min,0);
-  return `<div class="jrow"><div class="row" data-a="jToggle" data-v="${k}" style="cursor:pointer"><span class="badge c-${pctCls(j.rating/10)}">${j.rating}</span>
+  return `<div class="jrow"><div class="row" data-a="jToggle" data-v="${k}" style="cursor:pointer"><span class="badge ${j.rating?'c-'+pctCls(j.rating/10):'muted'}">${j.rating||'–'}</span>
    <div class="grow"><div style="font-weight:650">${dateLong(k)}</div><div class="muted small">${x.sleep?'alvás '+durTxt(x.sleep.min)+' · ':''}${am?'tevékenység '+durTxt(am)+' · ':''}${x.tasksDone.length} feladat</div></div><span class="muted">${op?'▾':'▸'}</span></div>
-   ${op?`<div style="margin-top:8px">${summaryHtml(x)}${j.note?`<div class="small" style="margin-top:8px;white-space:pre-wrap">${esc(j.note)}</div>`:''}
-    <div class="row" style="margin-top:8px"><button class="sm ghost" data-a="jEdit" data-v="${k}">Szerkesztés</button><button class="sm ghost danger" data-a="jDel" data-v="${k}">Törlés</button></div></div>`:''}</div>`;}).join('')}</div>`:''}`;
+   ${op?`<div style="margin-top:8px">${summaryHtml(x)}${(x.note||j.note)?`<div class="small" style="margin-top:8px;white-space:pre-wrap"><span class="muted">Jegyzet:</span> ${esc(x.note||j.note)}</div>`:''}
+    <div class="row" style="margin-top:8px"><button class="sm ${j.rating?'ghost':'primary'}" data-a="jEdit" data-v="${k}">${j.rating?'Szerkesztés':'Értékelés'}</button><button class="sm ghost danger" data-a="jDel" data-v="${k}">Törlés</button></div></div>`:''}</div>`;}).join('')}</div>`:''}`;
 }
 function parseRange(t){const m=String(t).match(/(\d{1,2})[:.]?(\d{2})?\s*[-–]\s*(\d{1,2})[:.]?(\d{2})?/);if(!m)return null;let s=+m[1]*60+(+m[2]||0),e=+m[3]*60+(+m[4]||0);if(s<5*60)s+=1440;if(e<=s)e+=1440;return e-s>=5&&e-s<=24*60?[s,e]:null;}
 
 /* ---------- avatár ---------- */
-const AV_SVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125" width="100%" height="100%"> <defs> <radialGradient id="avsk" cx="45%" cy="40%" r="70%"><stop offset="0" stop-color="#f0bf98"/><stop offset="1" stop-color="#d6996f"/></radialGradient> </defs> <path d="M0 125 C1 103 14 92 34 89 L66 89 C86 92 99 103 100 125 Z" fill="url(#avsk)"/><path d="M18 100 Q24 96 30 99" fill="none" stroke="#c4865e" stroke-width="1" opacity=".6"/><path d="M82 100 Q76 96 70 99" fill="none" stroke="#c4865e" stroke-width="1" opacity=".6"/> <path d="M39 72 L61 72 L62 93 Q50 99 38 93 Z" fill="#d89a70"/> <path d="M39 80 Q50 88 61 80 L61 76 Q50 84 39 76 Z" fill="#c4865e" opacity=".6"/> <path d="M21 125 L24 100 C26 93 30 90 34 90 C37 99 43 104 50 104 C57 104 63 99 66 90 C70 90 74 93 76 100 L79 125 Z" fill="#141414"/> <path d="M34 90 C37 99 43 104 50 104 C57 104 63 99 66 90" fill="none" stroke="#2c2c2c" stroke-width="1.6"/> <ellipse cx="26.5" cy="57" rx="4" ry="6" fill="#d89a70"/><ellipse cx="73.5" cy="57" rx="4" ry="6" fill="#d89a70"/> <path d="M26 50 C26 29 74 29 74 50 C74 67 68 79 50 81 C32 79 26 67 26 50 Z" fill="url(#avsk)"/> <path d="M24 50 C20 34 28 18 44 15 C56 11 72 16 77 32 C80 40 78 47 76 50 C74 44 72 41 68 40 C60 38 54 41 47 39 C40 38 33 40 29 44 C27 46 25 48 24 50 Z" fill="#9a7346"/> <g fill="#a98150"> <circle cx="27" cy="42" r="6"/><circle cx="31" cy="32" r="7.5"/><circle cx="40" cy="24" r="8"/><circle cx="51" cy="21" r="8.5"/><circle cx="62" cy="23" r="8"/><circle cx="70" cy="31" r="7.5"/><circle cx="74" cy="41" r="6"/> <circle cx="36" cy="37" r="5.5"/><circle cx="46" cy="35" r="5.5"/><circle cx="56" cy="34" r="5.5"/><circle cx="65" cy="37" r="5"/><circle cx="45" cy="15" r="5.5"/><circle cx="57" cy="14" r="5"/><circle cx="34" cy="20" r="4.5"/><circle cx="67" cy="17" r="4.5"/> </g> <g fill="#cfa86f"> <circle cx="42" cy="21" r="3.6"/><circle cx="53" cy="18" r="3.8"/><circle cx="63" cy="20" r="3.2"/><circle cx="33" cy="29" r="3"/><circle cx="70" cy="28" r="3"/><circle cx="47" cy="32" r="2.6"/><circle cx="58" cy="31" r="2.6"/><circle cx="46" cy="12" r="2.4"/><circle cx="37" cy="35" r="2.2"/><circle cx="66" cy="35" r="2.2"/> </g> <g fill="#e3c48e"><circle cx="52" cy="16" r="1.6"/><circle cx="41" cy="18" r="1.4"/><circle cx="62" cy="17" r="1.4"/><circle cx="31" cy="27" r="1.3"/></g> <g fill="none" stroke="#7c5a32" stroke-width=".9" opacity=".75"> <path d="M28 36 q3 -3 6 0"/><path d="M38 28 q3 -3.5 6 0"/><path d="M49 25 q3 -3.5 6 0"/><path d="M60 27 q3 -3.5 6 0"/><path d="M68 35 q3 -3 6 0"/><path d="M42 39 q2.5 -2.5 5 0"/><path d="M53 38 q2.5 -2.5 5 0"/><path d="M62 40 q2.5 -2.5 5 0"/> </g> <path d="M35.5 45.5 Q41 39.5 46.5 44" fill="none" stroke="#7a5a36" stroke-width="2.4" stroke-linecap="round"/> <path d="M53.5 47.2 Q59 45.6 64.5 47.8" fill="none" stroke="#7a5a36" stroke-width="2.4" stroke-linecap="round"/> <g class="eyes"> <ellipse cx="41" cy="52" rx="4.2" ry="2.8" fill="#fff"/><circle cx="41.6" cy="52.3" r="2" fill="#4f6f7d"/><circle cx="41.6" cy="52.3" r=".95" fill="#111"/><circle cx="42.3" cy="51.6" r=".45" fill="#fff"/> <ellipse cx="59" cy="52.5" rx="4.2" ry="2.5" fill="#fff"/><circle cx="59.6" cy="52.8" r="2" fill="#4f6f7d"/><circle cx="59.6" cy="52.8" r=".95" fill="#111"/><circle cx="60.3" cy="52.1" r=".45" fill="#fff"/> </g> <path d="M36.6 51.4 Q41 48.4 45.4 51.4 L45.4 49 L36.6 49 Z" fill="#e3ab83"/> <path d="M54.6 52 Q59 50.4 63.4 52 L63.4 49.5 L54.6 49.5 Z" fill="#e3ab83"/> <path d="M36.6 51.4 Q41 48.4 45.4 51.4" fill="none" stroke="#7a4b30" stroke-width=".8"/> <path d="M54.6 52 Q59 50.4 63.4 52" fill="none" stroke="#7a4b30" stroke-width=".8"/> <path d="M50.5 54 Q47.5 61.5 49 63.5 Q51 64.6 53.4 63" fill="none" stroke="#b9774f" stroke-width="1.2" stroke-linecap="round"/> <ellipse cx="36" cy="63" rx="4" ry="2.4" fill="#e58f7a" opacity=".25"/><ellipse cx="64" cy="63" rx="4" ry="2.4" fill="#e58f7a" opacity=".25"/> <path d="M40.5 68.4 Q45.5 64.6 50 66.4 Q54.5 64.6 59.5 68.4 Q55 70 50 68.6 Q45 70 40.5 68.4 Z" fill="#8a6640"/> <path class="m-closed" d="M43.5 72.3 Q50 75.6 58 71" fill="none" stroke="#8a3d30" stroke-width="1.6" stroke-linecap="round"/> <g class="m-open" style="display:none"><ellipse cx="50.5" cy="73.4" rx="5" ry="3.8" fill="#5a1d17"/><path d="M46 71.6 Q50.5 70.6 55 71.6 L54.6 72.8 Q50.5 72 46.4 72.8 Z" fill="#fff"/><ellipse cx="50.5" cy="75.6" rx="2.8" ry="1.2" fill="#c0504a"/></g> </svg>`;
-const AV={el:null,bub:null,typing:0,mouth:0,cur:null,lastAuto:0,i:0};
+/* Árcsi: rajzfilmes avatár, 3 póz. Vastag körvonal, sík színek. */
+const AVC={o:'#1b1410',sk:'#f0b083',sk2:'#d8925f',hair:'#c99a58',hair2:'#9c7038',hl:'#e6c27e',top:'#1d1d1d',must:'#8a5e2e',mouth:'#5e1a18'};
+function avHead(opts={}){
+ const c=AVC,gl=opts.glasses;
+ return `<g class="head">
+ <path d="M-38,-4 C-46,-24 -36,-46 -18,-50 C-8,-62 14,-62 24,-50 C42,-46 48,-24 39,-4 Z" fill="${c.hair2}" stroke="${c.o}" stroke-width="3"/>
+ <ellipse cx="-34" cy="6" rx="6.5" ry="9" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/><ellipse cx="34" cy="6" rx="6.5" ry="9" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/>
+ <path d="M-32,-14 C-32,-46 32,-46 32,-14 L31,14 C29,31 16,43 0,44 C-16,43 -29,31 -31,14 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/>
+ <path d="M-37,-4 C-45,-20 -37,-40 -25,-41 C-26,-54 -10,-60 -1,-51 C5,-62 23,-58 25,-45 C38,-45 46,-28 38,-6 C34,-17 28,-23 20,-23 C16,-30 6,-31 1,-25 C-5,-32 -17,-30 -19,-23 C-27,-25 -33,-17 -37,-4 Z" fill="${c.hair}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <g fill="none" stroke="${c.hl}" stroke-width="2.4" stroke-linecap="round"><path d="M-24,-34 q4,-5 9,-2"/><path d="M-3,-46 q5,-5 10,-1"/><path d="M16,-38 q5,-4 9,0"/><path d="M-12,-30 q3,-3 7,-1"/></g>
+ <g fill="none" stroke="${c.hair2}" stroke-width="2" stroke-linecap="round"><path d="M-30,-22 q3,4 7,3"/><path d="M8,-29 q3,4 7,3"/><path d="M27,-27 q3,4 6,4"/></g>
+ <path d="M-25,-11 Q-15,-22 -5,-14" fill="none" stroke="#5a3a1c" stroke-width="5" stroke-linecap="round"/>
+ <path d="M6,-11 Q15,-12 25,-9" fill="none" stroke="#5a3a1c" stroke-width="5" stroke-linecap="round"/>
+ <g class="eyes">
+  <ellipse cx="-14" cy="-1" rx="8.5" ry="9" fill="#fff" stroke="${c.o}" stroke-width="2.5"/><ellipse cx="14" cy="-1" rx="8.5" ry="9" fill="#fff" stroke="${c.o}" stroke-width="2.5"/>
+  <g class="pupils"><circle cx="-11.5" cy="0.5" r="2.8" fill="${c.o}"/><circle cx="16.5" cy="0.5" r="2.8" fill="${c.o}"/></g>
+  <path d="M-23.5,-3.5 Q-14,-8 -5,-3.5 L-5,-11 L-23.5,-11 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M4.5,-2 Q14,-5.5 23.5,-2 L23.5,-11 L4.5,-11 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="2.5" stroke-linejoin="round"/>
+ </g>
+ ${gl?`<g fill="none" stroke="${c.o}" stroke-width="2.5"><circle cx="-14" cy="-1" r="11"/><circle cx="14" cy="-1" r="11"/><path d="M-3,-2 Q0,-4 3,-2"/><path d="M-25,-3 L-32,-5"/><path d="M25,-3 L32,-5"/></g>`:''}
+ <path d="M2,3 Q-4,13 0,15 Q3,16.5 7,14" fill="none" stroke="${c.o}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M-16,22.5 Q-8,16 0,19.5 Q8,16 16,22.5 Q8,25 0,22 Q-8,25 -16,22.5 Z" fill="${c.must}" stroke="${c.o}" stroke-width="2.2" stroke-linejoin="round"/>
+ <path class="m-closed" d="M-9,28.5 Q1,32 11,26" fill="none" stroke="${c.o}" stroke-width="3" stroke-linecap="round"/>
+ <g class="m-open" style="display:none"><path d="M-9,26.5 Q1,25 11,25 Q9,37 1,37 Q-7,37 -9,26.5 Z" fill="${c.mouth}" stroke="${c.o}" stroke-width="2.5" stroke-linejoin="round"/><path d="M-6.5,27 L8.5,26.3 L8,29 L-6,29.5 Z" fill="#fff"/></g>
+ </g>`;
+}
+/* sportos felsőtest fekete trikóban */
+function avTorso(){const c=AVC;return `
+ <path d="M30,252 C27,205 30,166 52,151 C64,143 80,139 88,137 L112,137 C120,139 136,143 148,151 C170,166 173,205 170,252 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/>
+ <path d="M85,118 L115,118 L117,140 Q100,148 83,140 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M58,252 L60,170 C60,157 64,148 72,143 C78,161 90,168 100,168 C110,168 122,161 128,143 C136,148 140,157 140,170 L142,252 Z" fill="${c.top}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M78,192 Q100,200 122,192" fill="none" stroke="#3a3a3a" stroke-width="2.5" stroke-linecap="round"/>
+ <path d="M48,165 Q56,158 62,166" fill="none" stroke="${c.sk2}" stroke-width="2.5" stroke-linecap="round"/><path d="M152,165 Q144,158 138,166" fill="none" stroke="${c.sk2}" stroke-width="2.5" stroke-linecap="round"/>`;}
+function avSvg(pose){
+ const c=AVC;
+ if(pose==='couch')return avCouch();
+ const write=pose==='write';
+ const arms=write?`
+  <path d="M30,160 C20,182 22,206 36,222 L58,220 C60,204 58,182 54,162 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M38,214 C52,206 70,200 86,198 L92,214 C76,218 60,224 46,232 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <g class="book"><path d="M70,176 L128,170 L134,226 L76,232 Z" fill="#7a4b2a" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/><path d="M74,180 L126,174 L131,222 L79,228 Z" fill="#f5efe1" stroke="${c.o}" stroke-width="2"/>
+   <g stroke="#b8ad95" stroke-width="1.6"><path d="M82,188 L120,184"/><path d="M83,196 L121,192"/><path d="M84,204 L118,200"/><path d="M85,212 L112,209"/></g></g>
+  <ellipse cx="88" cy="207" rx="9" ry="7.5" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/>
+  <path d="M170,160 C180,182 178,206 164,222 L142,220 C140,204 142,182 146,162 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <g class="pen"><path d="M162,214 C150,208 134,202 120,200 L116,214 C130,216 144,222 154,230 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+   <ellipse cx="116" cy="206" rx="8" ry="7" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/>
+   <path d="M112,206 L100,190" stroke="${c.o}" stroke-width="5" stroke-linecap="round"/><path d="M112,206 L101,191" stroke="#2f6fd6" stroke-width="3" stroke-linecap="round"/></g>`
+ :`
+  <path d="M36,212 C62,204 122,204 152,210 L154,234 C122,239 62,239 38,235 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M164,204 C138,197 80,199 48,207 L46,229 C80,224 138,223 164,227 Z" fill="${c.sk2}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M164,204 C138,197 80,199 48,207 L47,214 C80,208 138,206 164,212 Z" fill="${c.sk}" opacity=".9"/>
+  <path d="M30,160 C20,182 22,208 36,226 L58,224 C60,206 58,182 54,162 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M170,160 C180,182 178,208 164,226 L142,224 C140,206 142,182 146,162 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M38,184 Q44,178 50,184" fill="none" stroke="${c.sk2}" stroke-width="2.5" stroke-linecap="round"/><path d="M162,184 Q156,178 150,184" fill="none" stroke="${c.sk2}" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M48,206 Q40,200 42,192 Q50,188 56,194" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/><path d="M44,196 L52,198" stroke="${c.o}" stroke-width="2"/>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 252" class="pose-${write?'write':'cross'}">${avTorso()}${arms}<g transform="translate(100,80) scale(1.18)"><g class="hd">${avHead({glasses:write})}</g></g></svg>`;
+}
+function avCouch(){
+ const c=AVC;
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -44 260 296" class="pose-couch">
+ <path d="M28,88 Q28,70 46,70 L214,70 Q232,70 232,88 L232,190 L28,190 Z" fill="#3f6f78" stroke="${c.o}" stroke-width="3"/>
+ <path d="M44,96 L216,96" stroke="#2f565e" stroke-width="3" fill="none"/>
+ <path d="M8,124 Q8,108 24,108 L44,108 Q56,108 56,124 L56,214 L8,214 Z" fill="#477f89" stroke="${c.o}" stroke-width="3"/>
+ <path d="M204,124 Q204,108 216,108 L236,108 Q252,108 252,124 L252,214 L204,214 Z" fill="#477f89" stroke="${c.o}" stroke-width="3"/>
+ <path d="M52,176 L208,176 L208,214 L52,214 Z" fill="#4f8a95" stroke="${c.o}" stroke-width="3"/>
+ <path d="M20,214 L20,236 M240,214 L240,236" stroke="${c.o}" stroke-width="6" stroke-linecap="round"/>
+ 
+ <path d="M98,180 L140,180 L140,204 L122,206 L120,240 L100,240 L100,206 Z" fill="#262626" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M90,244 L122,244 L124,236 L96,236 Z" fill="#f2f2f2" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M112,176 C140,172 168,176 184,186 L180,204 C164,198 140,198 116,200 Z" fill="#303030" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M178,180 L196,214 L182,220 L168,196 Z" fill="#303030" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M178,214 L204,212 L206,224 L182,226 Z" fill="#f2f2f2" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+ <g transform="translate(30,-50)">
+  <path d="M60,232 C58,200 62,170 80,156 C88,150 96,147 100,146 L120,146 C124,147 132,150 140,156 C158,170 162,200 160,232 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3"/>
+  <path d="M98,124 L122,124 L124,150 Q110,156 96,150 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M76,232 L77,176 C77,165 80,158 86,154 C90,168 100,174 110,174 C120,174 130,168 134,154 C140,158 143,165 143,176 L144,232 Z" fill="${c.top}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60,168 C52,186 52,206 62,218 L80,214 C80,200 78,184 74,170 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M160,168 C168,186 168,206 158,218 L140,214 C140,200 142,184 146,170 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M64,212 C78,206 92,198 104,186 L112,196 C102,208 86,218 70,224 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M156,212 C142,206 128,198 116,186 L108,196 C118,208 134,218 150,224 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M110,170 L98,184 Q99,194 106,194 L110,190 L114,194 Q121,194 122,184 Z" fill="${c.sk}" stroke="${c.o}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M110,172 L110,190" stroke="${c.o}" stroke-width="2"/>
+  <g transform="translate(110,92) rotate(-9)"><g class="hd">${avHead()}</g></g>
+ </g>
+ </svg>`;
+}
+
+
+const AV={el:null,bub:null,typing:0,mouth:0,cur:null,lastAuto:0,i:0,pose:'cross'};
 function verbOf(name){const n=name.trim().toLowerCase();return /(ás|és)$/.test(n)?n.slice(0,-2)+'ni':null;}
 function avMsgs(){
  const out=[],h=new Date().getHours(),k=dkey(),d=day(),c=S.profile?calc():null,sn=S.avatar.snooze||{},now=Date.now();
  const add=(key,text,go,goLabel)=>{if(!sn[key]||sn[key]<now)out.push({key,text,go,goLabel});};
  if(!S.profile)return out;
- if(!(S.sleep[k]||{}).wake&&h>=4&&h<14)add('wake','Jó reggelt! Felébredtél már? Nyomd meg, és beosztom a napodat.','woke','Felébredtem');
- const due=dueAt();if(due&&due<=now&&!S.session)add('wo','Ma edzésnap van: '+DAYS[S.nextDay].name+'. Ugye nem hagyod ki?','tab:workout','Edzés');
+ const due=trains()?dueAt():null;if(due&&due<=now&&!S.session)add('wo','Ma edzésnap van: '+DAYS[S.nextDay].name+'. Ugye nem hagyod ki?','tab:workout','Edzés');
  if(h>=16)S.acts.filter(a=>a.goal>0).forEach(a=>{const done=actMs(a.id,null,k)/6e4;if(done<a.goal){const v=verbOf(a.name);
   add('act'+a.id,v?`Ugye nem felejtettél el ma ${v}? Még ${durTxt(a.goal-done)} van hátra.`:`Ugye nem felejtetted el ma: ${a.name}? Még ${durTxt(a.goal-done)} van hátra.`,'act:'+a.id,'Indulok');}});
  if(S.profile.creatine&&!d.creatine&&h>=10)add('cr','Bevetted ma a kreatint?','creatine','Igen, bevettem');
@@ -1112,15 +1220,17 @@ function avMsgs(){
  if(c&&h>=17&&c.steps<c.stepGoal*.6)add('st',`Még ${fmt(c.stepGoal-c.steps)} lépés hiányzik a mai célhoz. Egy séta?`,'tab:today','Mutasd');
  const open=S.tasks.filter(t=>taskVisible(t,k)&&!taskDoneOn(t,k)).length;if(open&&h>=13)add('tk',`Van még ${open} nyitott feladatod. Haladunk?`,'tab:work','Munka');
  if(c&&h>=19){const t=debtState().total;if(t>300)add('db',`A kalóriatartozásod +${fmt(t)} kcal. Kb. ${fmt(Math.ceil(t/c.kps/100)*100)} lépés lenullázza.`,'tab:today','Mutasd');}
+ if(h>=18&&!(d.note||'').trim())add('note','Írj ide valamit, nem kell hogy számítson!','note','Írok');
  if(h>=21&&!S.journal[dayOf(now)])add('jr','Hogy telt a nap? Zárjuk le, és értékeld!','summary','Lezárom');
  return out;
 }
 const AV_TIPS=['Az aranyközépút nem a több, hanem a következetes.','Egy sorozat, abszolút bukásig. A többi csak zaj.','Ma is egy lépéssel jobb, mint tegnap.','Az alvás is edzés. Ne spórolj vele.','Kicsi, de minden nap. Így lesz belőle 450 óra.'];
 function avMount(){
- if(!AV.el){AV.el=document.createElement('div');AV.el.className='avatar';AV.el.innerHTML=AV_SVG;AV.el.setAttribute('aria-label','Avatár');AV.el.dataset.a='avTap';document.body.appendChild(AV.el);}
- const on=!!(S.profile&&S.avatar.on);AV.el.hidden=!on;document.body.classList.toggle('has-av',on);if(!on)avHide();
+ if(!AV.el){AV.el=document.createElement('div');AV.el.className='avatar';AV.el.innerHTML=avSvg(AV.pose);AV.el.setAttribute('aria-label','Avatár');AV.el.dataset.a='avTap';document.body.appendChild(AV.el);}
+ const on=!!(S.profile&&S.avatar.on&&!$('.stage'));AV.el.hidden=!on;document.body.classList.toggle('has-av',on);if(!on)avHide();
 }
-function avMouth(open){if(!AV.el)return;AV.el.querySelector('.m-open').style.display=open?'':'none';AV.el.querySelector('.m-closed').style.display=open?'none':'';}
+function avMouth(open,root){root=root||AV.el;if(!root)return;const o=root.querySelector('.m-open'),c=root.querySelector('.m-closed');if(!o)return;o.style.display=open?'':'none';c.style.display=open?'none':'';}
+function avPose(p){if(AV.pose===p)return;AV.pose=p;if(AV.el)AV.el.innerHTML=avSvg(p);}
 function avSay(m){
  avHide(true);AV.cur=m;const b=document.createElement('div');b.className='avbubble';
  b.innerHTML=`<button class="cl" data-a="avClose" aria-label="Bezárás">×</button><div class="tx" style="padding-right:14px"></div>${m.go?`<div class="acts"><button class="go" data-a="avGo">${esc(m.goLabel)}</button><button data-a="avLater">Később</button></div>`:''}`;
@@ -1132,10 +1242,10 @@ function avSay(m){
 }
 function avHide(keep){clearInterval(AV.typing);clearInterval(AV.mouth);avMouth(false);if(AV.el)AV.el.classList.remove('talk');if(AV.bub){AV.bub.remove();AV.bub=null;}if(!keep)AV.cur=null;}
 function avNext(){const ms=avMsgs();if(ms.length){avSay(ms[0]);return;}avSay({text:AV_TIPS[AV.i++%AV_TIPS.length]});}
-function avAuto(){if(!S.profile||!S.avatar.on||$('#sheet')||AV.bub)return;if(Date.now()-AV.lastAuto<3*6e4)return;const ms=avMsgs();if(!ms.length)return;AV.lastAuto=Date.now();avSay(ms[0]);}
+function avAuto(){if(!S.profile||!S.avatar.on||$('#sheet')||STG.el||AV.bub)return;if(Date.now()-AV.lastAuto<3*6e4)return;const ms=avMsgs();if(!ms.length)return;AV.lastAuto=Date.now();avSay(ms[0]);}
 function avGo(){
  const m=AV.cur;avHide();if(!m||!m.go)return;const g=m.go;
- if(g==='woke'){document.querySelector('[data-a=woke]')?document.querySelector('[data-a=woke]').click():(sleepRec(dkey()).wake=Date.now(),save(),render());return;}
+ if(g==='note'){tab='today';render();const n=$('#dayNote');if(n){n.scrollIntoView({block:'center'});n.focus();}return;}
  if(g==='creatine'){day().creatine=true;save();render();toast('Kreatin pipálva.');return;}
  if(g==='water'){day().water.push({id:uid(),ml:300});save();render();toast('+3 dl víz.');return;}
  if(g==='summary'){tab='plan';planView='summary';sumDay=dayOf(Date.now());sumRating=null;render();window.scrollTo(0,0);return;}
@@ -1143,12 +1253,146 @@ function avGo(){
  if(g.startsWith('tab:')){tab=g.slice(4);if(tab==='plan')planView='day';render();window.scrollTo(0,0);}
 }
 
+/* ---------- Árcsi jelenetei: teljes képernyős színpad ---------- */
+const STG={el:null,t:0,m:0};
+function stageOpen(pose,size){
+ if(!STG.el){STG.el=document.createElement('div');STG.el.className='stage';document.body.appendChild(STG.el);}
+ STG.el.innerHTML=`<div class="in"><div class="sbub" id="sbub"></div><div class="sav ${pose==='couch'?'couch':size||''}">${avSvg(pose)}</div><div class="sbody" id="sbody"></div></div>`;
+ STG.el.scrollTop=0;if(AV.el){AV.el.hidden=true;avHide();}document.body.style.overflow='hidden';
+}
+function stageClose(){if(STG.el){STG.el.remove();STG.el=null;}clearInterval(STG.t);clearInterval(STG.m);document.body.style.overflow='';render();}
+function stageSay(text,body,after){
+ const b=$('#sbub'),root=STG.el;clearInterval(STG.t);clearInterval(STG.m);if(!b)return;
+ const sb=$('#sbody');sb.innerHTML='';sb.style.visibility='hidden';
+ let i=0,o=false;STG.m=setInterval(()=>{o=!o;avMouth(o,root);},110);
+ const fin=()=>{clearInterval(STG.t);clearInterval(STG.m);avMouth(false,root);b.textContent=text;sb.innerHTML=body||'';sb.style.visibility='';if(after)after();};
+ b.onclick=fin;
+ STG.t=setInterval(()=>{i+=2;b.textContent=text.slice(0,i);if(i>=text.length)setTimeout(fin,120),clearInterval(STG.t);},26);
+}
+
+/* bemutató */
+const HOBBIES=['Gitározás','Dobolás','Olvasás','Horgászat','Kertészkedés','Festés','Rajzolás','Főzés','Futás','Nyelvtanulás','Fotózás','Sakk','Zongorázás','Éneklés','Programozás','Írás'];
+let OB=null;
+function obStart(prefill){
+ const P=prefill?Object.assign({},S.profile):{};
+ OB={step:0,P,hob:prefill?S.acts.map(a=>a.name):[],hours:Object.fromEntries((prefill?S.acts:[]).map(a=>[a.name,a.weekly||Math.round((a.goal||0)*7/60*2)/2])),plan:Object.assign({},S.plan),re:!!prefill};
+ obStep();
+}
+function obStep(){
+ const st=OB.step,P=OB.P,nm=P.name||'';
+ if(st===0){stageOpen('cross');stageSay('Szia! Engem Árcsinak hívnak. Én vagyok a kalauzod, aki segít neked megtalálni az aranymetszetet a te tempódban, a te életedre szabva. Készen állsz?',
+  `<button class="primary block" data-a="obNext">Készen állok!</button>${OB.re?'<button class="skip" data-a="obCancel">Mégse</button>':`<label class="skip" style="text-align:center;cursor:pointer;padding:8px">Van mentésem: visszatöltés<input type="file" accept=".json,application/json" id="restoreIn" hidden></label>`}`);return;}
+ if(st===1){stageOpen('cross','sm');stageSay('A testünk karbantartása elengedhetetlen egy optimális, vitális életstílus kialakításához. Add meg a paramétereidet, hogy segíthessek neked megtalálni a megfelelő edzés/kalória keresztmetszetet.',
+  `<div class="card"><div class="grid2" style="margin-top:0">
+   <label class="field" style="grid-column:1/-1"><span>Hogy szólíthatlak?</span><input id="ob_name" autocomplete="given-name" value="${esc(nm)}"></label>
+   <label class="field"><span>Életkor (év)</span><input id="ob_age" inputmode="numeric" value="${P.age??''}"></label>
+   <div class="field"><span>Nem</span>${seg('obsex',[['m','Férfi'],['f','Nő']],P.sex||'m')}</div>
+   <label class="field"><span>Testsúly (kg)</span><input id="ob_w" inputmode="decimal" value="${P.weight??''}"></label>
+   <label class="field"><span>Magasság (cm)</span><input id="ob_h" inputmode="numeric" value="${P.height??''}"></label>
+   <label class="field" style="grid-column:1/-1"><span>Testzsír (%), ha tudod</span><input id="ob_bf" inputmode="decimal" placeholder="nem kötelező" value="${P.bf??''}"></label></div>
+   <div class="field"><span>Mi a célod?</span>${seg('obgoal',[['cut','Fogyás'],['maintain','Szinten tartás'],['gain','Tömegnövelés']],P.goal||'maintain')}</div>
+   <div class="field"><span>Szedsz kreatint?</span>${seg('obcr',[['1','Igen'],['0','Nem']],P.creatine?'1':'0')}</div>
+   <div class="field" style="margin:0"><span>Edzel?</span>${seg('obtr',[['1','Edzek'],['0','Nem edzek']],P.trains===false?'0':'1')}</div></div>
+   <button class="primary block" data-a="obNext">Tovább</button>`);return;}
+ if(st===2){stageOpen('cross','sm');const T=targets(P);
+  stageSay('Köszönöm az együttműködésedet! Hadd mutassam meg a tervezetemet az adataid alapján.',
+  `<div class="card"><div class="label">Kalória · ${GOALS[P.goal].n}</div><div class="mid">${fmt(T.kcalT)} kcal / nap</div>
+   ${T.weeks?`<div class="hint">A céltestsúlyig (${dec(T.goalW)} kg) kb. ${T.weeks} hét.</div>`:''}
+   <div class="grid2"><div class="stat"><span>Fehérje</span><b>${fmt(T.protT)} g</b></div><div class="stat"><span>Víz</span><b>${dec(T.waterRec/1000)} l</b></div></div></div>
+  <div class="card"><div class="label">Lépésszám</div><div class="mid"><span id="sgv">${fmt(P.stepGoal||10000)}</span> lépés / nap</div>
+   <input type="range" id="ob_sg" min="10000" max="16000" step="500" value="${P.stepGoal||10000}"><div class="hint">Minél többet sétálsz, annál gyorsabban haladsz.</div></div>
+  <div class="card"><div class="label">Edzésterv</div>${P.trains===false?'<div class="small">Most nem edzel, ezért a mozgást a napi lépéscél adja. Ha később kedvet kapsz, a Profilomban bekapcsolhatod az edzést.</div>'
+   :`<div class="small"><b>Archie's HIT</b>, 4 napos rutin. Minden gyakorlat egy sorozat, bukásig. Két edzés között legalább 48 óra pihenő, ami a regenerációdhoz igazodik.</div>
+   <ul class="list small" style="margin-top:6px">${DAYS.map((D,i)=>`<li><div class="grow">${i+1}. nap</div><div>${D.name}</div></li>`).join('')}</ul>`}</div>
+  <button class="primary block" data-a="obNext">Tovább</button>`);return;}
+ if(st===3){stageOpen('cross','sm');
+  stageSay('Bár az edzés fontos, nem élhetünk teljes életet hobbik, mesterségek nélkül. Ezen tevékenységekbe fektetett időnk nyomon követése és a mérföldkövek használata pedig segít a szokásaink megértésében és a fejlődésben.\n\nMik a te hobbijaid, milyen mesterségeket tanulsz?',obHobBody());return;}
+ if(st===4){if(!OB.hob.length){OB.step=5;return obStep();}stageOpen('cross','sm');
+  stageSay('Egy héten mennyi időt szánsz ezekre a hobbikra?',`<div class="card">${OB.hob.map((h,i)=>`<div class="hrow"><b>${esc(h)}</b><input inputmode="decimal" data-hob="${i}" value="${String(OB.hours[h]??3).replace('.',',')}"><span class="muted small">óra/hét</span></div>`).join('')}
+   <div class="hint">Ebből osztom be a napirendedet, egyenletesen a hét napjaira.</div></div><button class="primary block" data-a="obNext">Tovább</button>`);return;}
+ if(st===5){stageOpen('cross','sm');const pl=OB.plan;
+  stageSay(`Bár sokszor megszabadulnánk tőle, a munka megkerülhetetlen területe életünknek, ami folyamatosan körbevesz minket. Ahogyan Voltaire megfogalmazta: „A munka megóv minket a három fő rossztól: a szegénységtől, az unalomtól és a bűntől.” A feladataink átláthatóságának növelése az egyik leghasznosabb dolog, amit tehetünk az aranymetszetünkért.\n\nMettől meddig dolgozol, kedves ${nm||'barátom'}?`,
+  `<div class="card"><div class="grid2" style="margin-top:0">
+   <label class="field"><span>Kezdés</span><input type="time" id="ob_ws" value="${pl.workStart}"></label>
+   <label class="field"><span>Vége</span><input type="time" id="ob_we" value="${pl.workEnd}"></label></div>
+   <div class="field"><span>Munkanapok</span><div class="days7">${[[1,'H'],[2,'K'],[3,'Sze'],[4,'Cs'],[5,'P'],[6,'Szo'],[0,'V']].map(([d,l])=>`<button type="button" data-a="wdToggle" data-v="${d}" class="${pl.workDays.includes(d)?'on':''}">${l}</button>`).join('')}</div></div>
+   <div class="grid2"><label class="field" style="margin:0"><span>Mikor fekszel le?</span><input type="time" id="ob_bed" value="${pl.bed}"></label>
+   <label class="field" style="margin:0"><span>Alvás (óra)</span><input id="ob_sl" inputmode="decimal" value="${String(pl.sleepH).replace('.',',')}"></label></div></div>
+  <button class="primary block" data-a="obNext">Tovább</button>`);return;}
+ if(st===6){stageOpen('cross');stageSay('Ezt már szeretem! Kezdődhet az utazás a mindennapok tengerén. Utadon járj szorgalommal és alázattal, hogy megtaláld a kiegyensúlyozott élet aranyát. Kezdhetjük?',
+  `<button class="primary block" data-a="obFinish">Kezdjük!</button>`);return;}
+}
+function obHobBody(){
+ const all=[...new Set([...HOBBIES,...OB.hob])];
+ return `<div class="card"><div class="chips">${all.map(h=>`<button type="button" data-a="obHob" data-v="${esc(h)}" class="${OB.hob.includes(h)?'on':''}">${esc(h)}</button>`).join('')}</div>
+  <form class="inline" data-form="obHobAdd"><input id="ob_hobIn" placeholder="Saját hobbi vagy mesterség" autocomplete="off"><button class="sm" type="submit">Hozzáadás</button></form></div>
+  <button class="primary block" data-a="obNext">${OB.hob.length?'Tovább':'Most kihagyom'}</button>`;
+}
+function obNext(){
+ const st=OB.step,P=OB.P;
+ if(st===1){
+  const n=($('#ob_name').value||'').trim(),age=num($('#ob_age').value),w=num($('#ob_w').value),h=num($('#ob_h').value),bf=num($('#ob_bf').value);
+  if(!n){toast('Hogy szólíthatlak? Írd be a neved.');return;}
+  if(!(age>=13&&age<=100)||!(w>=30&&w<=300)||!(h>=120&&h<=230)){toast('Ellenőrizd az életkort, a testsúlyt és a magasságot.');return;}
+  if(bf&&!(bf>=3&&bf<=60)){toast('A testzsír 3 és 60% között lehet.');return;}
+  Object.assign(P,{name:n,age,weight:w,height:h,bf:bf||null,sex:$('#f_obsex').value,goal:$('#f_obgoal').value,creatine:$('#f_obcr').value==='1',trains:$('#f_obtr').value!=='0'});
+  if(!P.stepGoal)P.stepGoal=P.goal==='cut'?12000:10000;
+ }
+ if(st===2)P.stepGoal=+$('#ob_sg').value||10000;
+ if(st===4){for(const el of document.querySelectorAll('[data-hob]')){const v=num(el.value);if(!(v>=0&&v<=80)){toast('Az órák száma 0 és 80 között lehet.');return;}OB.hours[OB.hob[+el.dataset.hob]]=v;}}
+ if(st===5){const ws=$('#ob_ws').value,we=$('#ob_we').value,bed=$('#ob_bed').value,sl=num($('#ob_sl').value);
+  if(!ws||!we||!bed){toast('Adj meg minden időpontot.');return;}if(!(sl>=4&&sl<=12)){toast('Az alvás 4 és 12 óra között lehet.');return;}
+  OB.plan={bed,sleepH:sl,workStart:ws,workEnd:we,workDays:[...document.querySelectorAll('.days7 button.on')].map(x=>+x.dataset.v)};}
+ OB.step++;obStep();
+}
+function obFinish(){
+ const P=OB.P;S.profile=Object.assign({},S.profile||{},P);S.plan=OB.plan;
+ OB.hob.forEach(name=>{const wk=OB.hours[name]??3,goal=Math.round(wk*60/7/5)*5;let a=S.acts.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(a){a.weekly=wk;a.goal=goal;}else S.acts.push({id:uid(),name,goal,weekly:wk,subs:[],metro:/gitár|dob|zongor|ének|bass|hegedű/i.test(name),tuner:/gitár/i.test(name),trophies:[]});});
+ S.onboarded=true;OB=null;save();tab='today';
+ if(!(S.sleep[dkey()]||{}).wake)S.sleep[dkey()]=Object.assign(S.sleep[dkey()]||{},{wake:Date.now()});save();
+ stageClose();window.scrollTo(0,0);
+}
+
+/* napi jelenetek */
+function wakeScene(){
+ stageOpen('cross');stageSay('Felébredtél?',`<div class="row"><button class="primary grow" data-a="wakeYes">Igen</button><button class="grow" data-a="wakeNo">Még nem</button></div>`);
+}
+const COUCH_REPLY={Pihenek:'Jól teszed. A pihenés is része az aranymetszetnek.',Telefonozok:'Hmm. Tíz perc, aztán leteszed. Megegyeztünk?',Eszek:'Jó étvágyat! Aztán ne felejtsd el beírni a naplóba.'};
+function couchScene(){
+ S.avatar.couchAt=Date.now();save();stageOpen('couch');
+ stageSay('Mi járatban?',`<div class="chips" style="justify-content:center">${Object.keys(COUCH_REPLY).map(o=>`<button data-a="couchAns" data-v="${o}">${o}</button>`).join('')}</div>
+  <form class="inline" data-form="couch"><input id="couchIn" placeholder="pl. A barátnőmmel vagyok" autocomplete="off" enterkeyhint="send"><button class="sm primary" type="submit">Küldés</button></form>
+  <button class="skip" data-a="stageClose">Később</button>`);
+}
+function couchAnswer(text){
+ const k=dkey(),d=day();(d.evening=d.evening||[]).push({at:Date.now(),text});save();
+ const r=COUCH_REPLY[text]||(/barát|család|anyu|apu|szerelm|párom|feleség|férj/i.test(text)?'Ez a legfontosabb. Élvezd, a telefon várhat.':'Értem. Érezd jól magad, itt leszek, ha kellek.');
+ stageSay(r,`<button class="primary block" data-a="stageClose">Rendben</button>`);
+}
+function dailyScene(){
+ if(!S.profile||STG.el||$('#sheet'))return false;
+ const k=dkey(),h=new Date().getHours(),now=new Date(),nowM=now.getHours()*60+now.getMinutes();
+ if(!(S.sleep[k]||{}).wake&&h>=4&&h<20){wakeScene();return true;}
+ const P=S.plan;if(isWorkday(k)){const we=tm(P.workEnd),bed=tm(P.bed)+(tm(P.bed)<tm(P.workEnd)?1440:0);
+  if(nowM>=we&&nowM<bed-30&&h<23&&(!S.avatar.couchAt||Date.now()-S.avatar.couchAt>2*36e5)){couchScene();return true;}}
+ return false;
+}
+function autoJournal(){
+ const today=dkey();let n=0;
+ for(let i=1;i<=14;i++){const k=addDays(today,-i);if(S.journal[k])continue;const d=S.days[k]||{};
+  const has=isTracked(k)||(d.note||'').trim()||(d.evening||[]).length||S.actLog.some(l=>dkey(new Date(l.start))===k)||S.tasks.some(t=>t.doneDay===k)||(S.sleep[k]||{}).wake||S.workouts.some(w=>dkey(new Date(w.at))===k);
+  if(has){S.journal[k]={rating:null,note:(d.note||'').trim(),auto:true,savedAt:Date.now(),snap:daySummary(k)};n++;}}
+ if(n)save();
+}
+
 function render(){
  avMount();
  const app=$('#app'),nav=$('#nav');
- if(!S.profile){app.innerHTML=profileForm(true);nav.hidden=true;return;}
+ if(!S.profile){app.innerHTML='';nav.hidden=true;if(!$('.stage'))obStart();return;}
  nav.hidden=false;
- nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===(tab==='results'?'workout':tab)));
+ if(!trains()&&(tab==='workout'||tab==='results'))tab='today';
+ nav.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.v===(tab==='results'?'workout':tab==='settings'?'today':tab));if(b.dataset.v==='workout')b.hidden=!trains();});
  app.innerHTML=runBar()+(tab==='workout'?viewWorkout():tab==='plan'?viewPlan():tab==='work'?viewWork():tab==='acts'?viewActs():tab==='results'?viewResults():tab==='settings'?viewSettings():viewToday());
  if(tab==='acts')hydrateMedia();
  maybeAskRecovery();
@@ -1167,7 +1411,7 @@ function sheet(title,sub,cb,cancel,scale=5){
 function closeSheet(){const s=$('#sheet');if(s)s.remove();pendingRate=null;}
 let toastT;function toast(m){let t=$('#toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,4500);}
 function maybeAskRecovery(force){
- if(!S.profile||$('#sheet')||day().recovery!=null)return;
+ if(!S.profile||!trains()||$('#sheet')||$('.stage')||day().recovery!=null)return;
  if(!force&&recoveryDismissed===dkey())return;
  sheet('Mennyire érzed magad regeneráltnak?','Napi első bejelentkezés. Ez alapján igazodik a pihenőidő.',v=>{toast(applyRecovery(v));render();},'Később');
 }
@@ -1182,6 +1426,16 @@ document.addEventListener('click',e=>{
  const a=b.dataset.a,v=b.dataset.v,d=day();
  switch(a){
   case 'tab':tab=v;if(v==='plan')planView='day';if(v!=='acts'){if(M.on)metroStop();tunerStop();}render();window.scrollTo(0,0);break;
+  case 'obNext':obNext();break;
+  case 'obFinish':obFinish();break;
+  case 'obCancel':OB=null;stageClose();break;
+  case 'obRestart':obStart(true);break;
+  case 'obHob':{const i=OB.hob.indexOf(v);if(i>-1)OB.hob.splice(i,1);else OB.hob.push(v);$('#sbody').innerHTML=obHobBody();break;}
+  case 'wakeYes':{sleepRec(dkey()).wake=Date.now();save();const ln=lastNight(dkey());
+   stageSay('Csodálatos! A telefont vágd ki az ablakon, igyál egy kávét, utána konzultálunk. Csak semmi sietség. Kivéve persze, ha szeretnél visszafejlődni, akkor azonnal nyisd meg az Instagramot.'+(ln?`\n\n(${durTxt(ln.ms/6e4)} alvás.)`:''),`<button class="primary block" data-a="stageClose">Rendben</button>`);break;}
+  case 'wakeNo':stageClose();break;
+  case 'stageClose':stageClose();break;
+  case 'couchAns':couchAnswer(v);break;
   case 'avTap':if(AV.bub){avHide();}else avNext();break;
   case 'avClose':avHide();break;
   case 'avLater':{const m=AV.cur;if(m&&m.key){S.avatar.snooze[m.key]=Date.now()+3*36e5;save();}avHide();break;}
@@ -1194,9 +1448,9 @@ document.addEventListener('click',e=>{
   case 'planJournal':planView='journal';render();window.scrollTo(0,0);break;
   case 'sumRate':sumRating=+v;document.querySelectorAll('.rate10 button').forEach(x=>x.classList.toggle('on',+x.dataset.v===sumRating));break;
   case 'sumSave':{if(!sumRating){toast('Előbb értékeld a napot 1 és 10 között.');return;}const k=sumDay||dayOf(Date.now());
-   S.journal[k]={rating:sumRating,note:($('#sumNote').value||'').trim(),savedAt:Date.now(),snap:daySummary(k)};save();planView='journal';jOpen=k;render();window.scrollTo(0,0);toast('A nap elmentve.');break;}
+   S.journal[k]={rating:sumRating,note:((S.days[k]||{}).note||'').trim(),savedAt:Date.now(),snap:daySummary(k)};save();planView='journal';jOpen=k;render();window.scrollTo(0,0);toast('A nap elmentve.');break;}
   case 'jToggle':jOpen=jOpen===v?null:v;render();break;
-  case 'jEdit':planView='summary';sumDay=v;sumRating=S.journal[v].rating;render();window.scrollTo(0,0);break;
+  case 'jEdit':planView='summary';sumDay=v;sumRating=S.journal[v].rating||null;render();window.scrollTo(0,0);break;
   case 'jDel':if(confirm('Törlöd ennek a napnak a mentését?')){delete S.journal[v];save();render();}break;
   case 'wdToggle':b.classList.toggle('on');break;
   case 'planSave':{const sh=num($('#pl_sleep').value);if(!(sh>=4&&sh<=12)){toast('Az alvás 4 és 12 óra között lehet.');return;}
@@ -1263,7 +1517,7 @@ document.addEventListener('click',e=>{
    break;}
   case 'saveProfile':{
    const old=S.profile||{};
-   const P={age:num($('#f_age').value),sex:$('#f_sex').value,weight:num($('#f_weight').value),height:num($('#f_height').value),goal:$('#f_goal').value,creatine:$('#f_creatine').value==='1',
+   const P={name:($('#f_name').value||'').trim(),trains:$('#f_trains').value!=='0',age:num($('#f_age').value),sex:$('#f_sex').value,weight:num($('#f_weight').value),height:num($('#f_height').value),goal:$('#f_goal').value,creatine:$('#f_creatine').value==='1',
     bf:num($('#f_bf').value)||null,targetBf:num($('#f_tbf').value)||null,goalWeight:num($('#f_gw').value)||null,stepGoal:+$('#f_sg').value||10000,
     kcalOverride:$('#f_kcal')?(num($('#f_kcal').value)||null):(old.kcalOverride||null),waterTarget:$('#f_water')?(num($('#f_water').value)||null):(old.waterTarget||null)};
    if(!(P.age>=13&&P.age<=100)||!(P.weight>=30&&P.weight<=300)||!(P.height>=120&&P.height<=230)){toast('Ellenőrizd az életkort, a testsúlyt és a magasságot.');return;}
@@ -1331,6 +1585,10 @@ document.addEventListener('submit',e=>{
   if(!(kcal>=0)){toast('Add meg a kalóriát.');return;}
   day().food.push({id:uid(),name,kcal:Math.round(kcal),protein:p>0?Math.round(p*10)/10:0});save();render();
   const n=$('#fn');if(n)n.focus();
+ }else if(f==='obHobAdd'){
+  const n=($('#ob_hobIn').value||'').trim();if(!n)return;const name=n.charAt(0).toUpperCase()+n.slice(1);if(!OB.hob.some(h=>h.toLowerCase()===name.toLowerCase()))OB.hob.push(name);$('#sbody').innerHTML=obHobBody();
+ }else if(f==='couch'){
+  const n=($('#couchIn').value||'').trim();if(!n)return;couchAnswer(n);
  }else if(f==='newTrophy'){
   const n=$('#trophyIn').value.trim();if(!n){toast('Add meg a trófea nevét.');return;}
   const a=actById(actOpen);const goal=$('#f_tstate').value!=='won';(a.trophies=a.trophies||[]).push({id:uid(),name:n,tier:$('#f_tier').value||'gold',k:dkey(),goal,media:[]});save();render();toast(goal?'Elérendő trófea hozzáadva.':'Trófea hozzáadva.');
@@ -1361,6 +1619,8 @@ document.addEventListener('submit',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='fn'){e.preventDefault();$('#fk').focus();}});
 document.addEventListener('input',e=>{
  const t=e.target;
+ if(t.id==='dayNote'){day().note=t.value;clearTimeout(window.__nt);window.__nt=setTimeout(save,400);return;}
+ if(t.id==='ob_sg'){$('#sgv').textContent=fmt(+t.value);return;}
  if(t.id==='bpmRange'){setBpm(+t.value);return;}
  if(t.id==='f_sg'){$('#sgv').textContent=fmt(+t.value);return;}
  if(t.id==='gymIn'&&S.session){S.session.gym=t.value.trim();save();return;}
@@ -1375,9 +1635,12 @@ document.addEventListener('change',e=>{if(e.target.id==='gymIn'&&S.session)rende
 document.addEventListener('change',e=>{const t=e.target;if(t.id==='restoreIn'&&t.files&&t.files[0]){restore(t.files[0]);t.value='';return;}if(!t.dataset||!t.dataset.file)return;const f=t.files&&t.files[0];if(!f)return;
  if(f.size>300*1048576&&!confirm('Ez a fájl '+Math.round(f.size/1048576)+' MB. A nagy videók gyorsan betöltik a telefon tárhelyét. Így is csatolod?'))return;
  attachBlob(t.dataset.file,f,f.name);});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){tunerStop();return;}S=load();render();setTimeout(avAuto,1200);});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){tunerStop();save();return;}if(STG.el)return;S=load();autoJournal();closeSheet();dailyScene();render();setTimeout(avAuto,900);});
+document.addEventListener('focusin',e=>{if(e.target.id==='dayNote'&&S.avatar.on){avPose('write');avSay({text:'Hallgatlak. Írj nyugodtan, nem nézek oda.'});setTimeout(()=>{if(AV.cur&&!AV.cur.key)avHide();},3200);}});
+document.addEventListener('focusout',e=>{if(e.target.id==='dayNote'){save();setTimeout(()=>{if(document.activeElement&&document.activeElement.id==='dayNote')return;if(AV.cur&&!AV.cur.key)avHide();avPose('cross');},150);}});
+if(S.profile){autoJournal();dailyScene();}
 render();
-setTimeout(avAuto,1800);
+setTimeout(avAuto,1500);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
